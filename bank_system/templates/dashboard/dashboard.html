@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if recent_transactions %}
+    <div class="list-group">
+        {% for transaction in recent_transactions %}
+        <div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge bg-{% if transaction.transaction_type == 'deposit' %}success{% elif transaction.transaction_type == 'withdrawal' %}warning{% else %}info{% endif %}">
+                        {{ transaction.get_transaction_type_display }}
+                    </span>
+                    <small class="d-block text-muted">{{ transaction.created_at|date:"M d, Y H:i" }}</small>
+                </div>
+                <strong class="{% if transaction.to_account in accounts %}text-success{% else %}text-danger{% endif %}">
+                    ${{ transaction.amount }}
+                </strong>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-center mt-3">
+        <a href="{% url 'transaction_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+    </div>
+{% else %}
+    <p class="text-muted">No transactions yet.</p>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="{% url 'account_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> New Account
+                    </a>
+                    {% if accounts %}
+                    <a href="{% url 'deposit' accounts.first.pk %}" class="btn btn-success">
+                        <i class="fas fa-arrow-down"></i> Deposit
+                    </a>
+                    <a href="{% url 'withdraw' accounts.first.pk %}" class="btn btn-warning">
+                        <i class="fas fa-arrow-up"></i> Withdraw
+                    </a>
+                    <a href="{% url 'transfer' accounts.first.pk %}" class="btn btn-info">
+                        <i class="fas fa-exchange-alt"></i> Transfer
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'transaction_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-list"></i> View All Transactions
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
