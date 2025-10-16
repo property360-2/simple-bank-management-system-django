@@ -2,19 +2,17 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from accounts.models import Account
 from transactions.models import Transaction
-from django.db.models import Sum
+from django.db.models import Sum, Q
 
 @login_required
 def dashboard(request):
-    accounts = Account.objects.filter(user=request.user)
+    accounts = Account.objects.filter(user=request.user, is_active=True)
     total_balance = accounts.aggregate(total=Sum('balance'))['total'] or 0
     
+    # Get recent transactions for user's accounts
     recent_transactions = Transaction.objects.filter(
-        from_account__in=accounts
-    ) | Transaction.objects.filter(
-        to_account__in=accounts
-    )
-    recent_transactions = recent_transactions.distinct().order_by('-created_at')[:5]
+        Q(from_account__in=accounts) | Q(to_account__in=accounts)
+    ).distinct().order_by('-created_at')[:5]
     
     context = {
         'accounts': accounts,

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Q
 from .models import Account
 from .forms import AccountForm
 
@@ -12,11 +13,24 @@ def account_list(request):
 @login_required
 def account_detail(request, pk):
     account = get_object_or_404(Account, pk=pk, user=request.user)
-    transactions = account.incoming_transactions.all()[:10] | account.outgoing_transactions.all()[:10]
-    transactions = sorted(transactions, key=lambda x: x.created_at, reverse=True)[:10]
+    
+    # Get all transactions related to this account
+    from transactions.models import Transaction
+    transactions = Transaction.objects.filter(
+        Q(from_account=account) | Q(to_account=account)
+    ).order_by('-created_at')[:10]
+    
+    # Calculate statistics
+    total_deposits = account.incoming_transactions.filter(transaction_type='deposit').count()
+    total_withdrawals = account.outgoing_transactions.filter(transaction_type='withdrawal').count()
+    total_transfers = account.outgoing_transactions.filter(transaction_type='transfer').count()
+    
     return render(request, 'accounts/account_detail.html', {
         'account': account,
-        'transactions': transactions
+        'transactions': transactions,
+        'total_deposits': total_deposits,
+        'total_withdrawals': total_withdrawals,
+        'total_transfers': total_transfers,
     })
 
 @login_required
@@ -48,6 +62,11 @@ def account_update(request, pk):
 def account_delete(request, pk):
     account = get_object_or_404(Account, pk=pk, user=request.user)
     if request.method == 'POST':
+        # Check if account has balance
+        if account.balance > 0:
+            messages.error(request, 'Cannot delete account with non-zero balance!')
+            return redirect('account_detail', pk=account.pk)
+        
         account_number = account.account_number
         account.delete()
         messages.success(request, f'Account {account_number} deleted successfully!')

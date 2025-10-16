@@ -96,9 +96,9 @@
                 <h5 class="mb-0"><i class="fas fa-chart-line"></i> Quick Stats</h5>
             </div>
             <div class="card-body">
-                <p><strong>Total Deposits:</strong> ${{ account.incoming_transactions.filter(transaction_type='deposit').count }}</p>
-                <p><strong>Total Withdrawals:</strong> ${{ account.outgoing_transactions.filter(transaction_type='withdrawal').count }}</p>
-                <p><strong>Total Transfers:</strong> {{ account.outgoing_transactions.filter(transaction_type='transfer').count }}</p>
+                <p><strong>Total Deposits:</strong> {{ total_deposits }}</p>
+                <p><strong>Total Withdrawals:</strong> {{ total_withdrawals }}</p>
+                <p><strong>Total Transfers:</strong> {{ total_transfers }}</p>
             </div>
         </div>
     </div>

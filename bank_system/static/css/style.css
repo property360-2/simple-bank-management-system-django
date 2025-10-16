@@ -1,19 +1,39 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
 }
 
 .card {
     border-radius: 10px;
     margin-bottom: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,.15) !important;
 }
 
 .card-header {
     border-radius: 10px 10px 0 0 !important;
+    font-weight: 600;
 }
 
 .btn {
     border-radius: 5px;
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,.2);
 }
 
 .navbar {
@@ -22,10 +42,17 @@ body {
 
 footer {
     margin-top: auto;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
 }
 
 .list-group-item {
     border-left: 4px solid #007bff;
+    transition: background-color 0.2s;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
 }
 
 .table-hover tbody tr:hover {
@@ -34,4 +61,109 @@ footer {
 
 .badge {
     padding: 0.5em 0.75em;
+    font-weight: 500;
+}
+
+/* Dashboard specific styles */
+.card-body .rounded-circle {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Form styling */
+.form-control, .form-select {
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
+}
+
+/* Alert styling */
+.alert {
+    border-radius: 8px;
+    border-left: 4px solid;
+}
+
+.alert-success {
+    border-left-color: #198754;
+}
+
+.alert-danger {
+    border-left-color: #dc3545;
+}
+
+.alert-warning {
+    border-left-color: #ffc107;
+}
+
+.alert-info {
+    border-left-color: #0dcaf0;
+}
+
+/* Transaction amount colors */
+.text-success {
+    color: #198754 !important;
+    font-weight: 600;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+    font-weight: 600;
+}
+
+/* Card borders */
+.border-primary {
+    border-left: 4px solid #0d6efd !important;
+}
+
+.border-success {
+    border-left: 4px solid #198754 !important;
+}
+
+.border-info {
+    border-left: 4px solid #0dcaf0 !important;
+}
+
+.border-danger {
+    border-left: 4px solid #dc3545 !important;
+}
+
+/* Logout button styling */
+.dropdown-item button {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.dropdown-item form {
+    margin: 0;
+}
+
+.dropdown-item form button {
+    color: inherit;
+    padding: 0;
+}
+
+.dropdown-item form button:hover {
+    background-color: transparent;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body .rounded-circle {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .card-body .rounded-circle i {
+        font-size: 1.5rem !important;
+    }
 }
