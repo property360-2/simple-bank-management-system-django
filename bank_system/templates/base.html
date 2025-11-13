@@ -1,32 +1,409 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="{% if request.user.is_authenticated and request.user.preferences.theme %}{{ request.user.preferences.theme }}{% else %}light{% endif %}">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Bank System{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <meta name="theme-color" content="#007bff">
+
+    <!-- Theme CSS with variables -->
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+
+            --card-bg: #ffffff;
+            --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+
+            --font-size-base: 16px;
+            --font-size-sm: 14px;
+            --font-size-lg: 18px;
+            --font-size-xl: 20px;
+        }
+
+        html[data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+            --card-bg: #252525;
+            --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.5);
+        }
+
+        html[data-font-size="small"] {
+            --font-size-base: 14px;
+            --font-size-sm: 12px;
+            --font-size-lg: 16px;
+            --font-size-xl: 18px;
+        }
+
+        html[data-font-size="large"] {
+            --font-size-base: 18px;
+            --font-size-sm: 16px;
+            --font-size-lg: 20px;
+            --font-size-xl: 22px;
+        }
+
+        html[data-font-size="extra-large"] {
+            --font-size-base: 20px;
+            --font-size-sm: 18px;
+            --font-size-lg: 22px;
+            --font-size-xl: 24px;
+        }
+
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: var(--font-size-base);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar {
+            background-color: var(--bg-secondary) !important;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .alert {
+            border: none;
+            border-radius: 0.5rem;
+            border-left: 4px solid;
+        }
+
+        .alert-success { border-left-color: var(--success-color); background-color: rgba(40, 167, 69, 0.1); }
+        .alert-danger { border-left-color: var(--danger-color); background-color: rgba(220, 53, 69, 0.1); }
+        .alert-warning { border-left-color: var(--warning-color); background-color: rgba(255, 193, 7, 0.1); }
+        .alert-info { border-left-color: var(--info-color); background-color: rgba(23, 162, 184, 0.1); }
+
+        .list-group-item {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+
+        footer {
+            background-color: var(--bg-secondary) !important;
+            color: var(--text-primary);
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+
+        main {
+            min-height: calc(100vh - 200px);
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            min-width: 300px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .toast.hiding {
+            animation: slideOutRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Button Loading State */
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+    </style>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     {% include 'includes/_navbar.html' %}
-    
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
     <main class="container my-4">
         {% include 'includes/_alerts.html' %}
         {% block content %}{% endblock %}
     </main>
-    
-    <footer class="bg-light text-center py-3 mt-5">
-        <p class="mb-0">&copy; 2025 Bank Management System</p>
+
+    <footer class="text-center py-3 mt-5">
+        <p class="mb-0">&copy; 2025 Bank Management System. All rights reserved.</p>
     </footer>
-    
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Set font size from preferences
+        {% if request.user.is_authenticated and request.user.preferences.font_size %}
+        document.documentElement.setAttribute('data-font-size', '{{ request.user.preferences.font_size }}');
+        {% endif %}
+
+        // Toast Notification System
+        const showToast = (message, type = 'info', duration = 5000) => {
+            const toastContainer = document.getElementById('toastContainer');
+            const toastId = 'toast-' + Date.now();
+
+            const bgColors = {
+                success: 'bg-success',
+                error: 'bg-danger',
+                warning: 'bg-warning',
+                info: 'bg-info'
+            };
+
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+
+            const toast = document.createElement('div');
+            toast.id = toastId;
+            toast.className = `toast ${bgColors[type] || 'bg-info'} text-white`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="toast-header ${bgColors[type] || 'bg-info'} text-white">
+                    <i class="fas ${icons[type] || 'fa-info-circle'} me-2"></i>
+                    <strong class="me-auto">${type.charAt(0).toUpperCase() + type.slice(1)}</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            const bsToast = new bootstrap.Toast(toast, {
+                autohide: true,
+                delay: duration
+            });
+
+            bsToast.show();
+
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+
+            return bsToast;
+        };
+
+        // Loading Overlay Functions
+        const showLoading = () => {
+            document.getElementById('loadingOverlay').classList.add('show');
+        };
+
+        const hideLoading = () => {
+            document.getElementById('loadingOverlay').classList.remove('show');
+        };
+
+        // Button Loading State
+        const setButtonLoading = (button, loading = true) => {
+            if (loading) {
+                button.classList.add('btn-loading');
+                button.disabled = true;
+                button.dataset.originalText = button.innerHTML;
+                button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Loading...';
+            } else {
+                button.classList.remove('btn-loading');
+                button.disabled = false;
+                if (button.dataset.originalText) {
+                    button.innerHTML = button.dataset.originalText;
+                }
+            }
+        };
+
+        // Form Loading State Handler
+        const handleFormSubmit = (form) => {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                setButtonLoading(submitBtn, true);
+            }
+            showLoading();
+        };
+
+        // Add loading state to all forms
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auto-show toast for Django messages
+            {% if messages %}
+                {% for message in messages %}
+                    showToast('{{ message }}', '{{ message.tags }}');
+                {% endfor %}
+            {% endif %}
+
+            // Add form submit handlers
+            document.querySelectorAll('form:not(.no-loading)').forEach(form => {
+                form.addEventListener('submit', () => handleFormSubmit(form));
+            });
+
+            // Add loading to links with data-loading attribute
+            document.querySelectorAll('a[data-loading]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (!link.getAttribute('href').startsWith('#')) {
+                        showLoading();
+                    }
+                });
+            });
+        });
+
+        // Global error handler
+        window.addEventListener('error', (e) => {
+            hideLoading();
+            // Optionally show error toast
+            // showToast('An error occurred. Please try again.', 'error');
+        });
+
+        // Make functions available globally
+        window.showToast = showToast;
+        window.showLoading = showLoading;
+        window.hideLoading = hideLoading;
+        window.setButtonLoading = setButtonLoading;
+    </script>
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>

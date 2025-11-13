@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Open Savings Account{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0"><i class="fas fa-piggy-bank"></i> Open Savings Account</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="product" class="form-label">Savings Product *</label>
+                            <select name="product" id="product" class="form-select" required>
+                                <option value="">-- Select Product --</option>
+                                {% for product in products %}
+                                <option value="{{ product.id }}" data-rate="{{ product.interest_rate }}" data-min="{{ product.min_balance }}">
+                                    {{ product.name }} - {{ product.interest_rate }}% APY (Min: ${{ product.min_balance }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="account" class="form-label">Fund From Account *</label>
+                            <select name="account" id="account" class="form-select" required>
+                                <option value="">-- Select Account --</option>
+                                {% for account in accounts %}
+                                <option value="{{ account.id }}">
+                                    {{ account.account_number }} - ${{ account.balance|floatformat:2 }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="initial_deposit" class="form-label">Initial Deposit</label>
+                            <input type="number" name="initial_deposit" id="initial_deposit" class="form-control"
+                                   step="0.01" min="0" value="0" required>
+                            <div class="form-text">Amount to transfer from your account</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-info btn-lg">
+                                <i class="fas fa-check"></i> Open Savings Account
+                            </button>
+                            <a href="{% url 'savings:savings_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

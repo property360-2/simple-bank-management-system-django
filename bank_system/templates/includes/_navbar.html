@@ -1,47 +1,77 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-light" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'dashboard' %}">
-            <i class="fas fa-university"></i> Bank System
+        <a class="navbar-brand" href="{% url 'dashboard' %}" style="color: white; font-weight: bold; font-size: 1.5rem;">
+            <i class="fas fa-university"></i> FinanceHub
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="border-color: rgba(255, 255, 255, 0.3); color: white;">
+            <span class="navbar-toggler-icon" style="background-image: url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.5)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e\");"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             {% if user.is_authenticated %}
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'dashboard' %}">
-                        <i class="fas fa-tachometer-alt"></i> Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'account_list' %}">
-                        <i class="fas fa-wallet"></i> Accounts
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'transaction_list' %}">
-                        <i class="fas fa-exchange-alt"></i> Transactions
-                    </a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i> {{ user.username }}
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <form method="post" action="{% url 'logout' %}" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="dropdown-item">
-                                    <i class="fas fa-sign-out-alt"></i> Logout
-                                </button>
-                            </form>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}" style="color: white; font-weight: 500;">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account_list' %}" style="color: white; font-weight: 500;">
+                            <i class="fas fa-wallet"></i> Accounts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'transaction_list' %}" style="color: white; font-weight: 500;">
+                            <i class="fas fa-exchange-alt"></i> Transactions
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'savings:savings_list' %}" style="color: white; font-weight: 500;">
+                            <i class="fas fa-piggy-bank"></i> Savings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'investments:portfolio_list' %}" style="color: white; font-weight: 500;">
+                            <i class="fas fa-chart-line"></i> Investments
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'settings:dashboard' %}" style="color: white; font-weight: 500;" title="Settings">
+                            <i class="fas fa-cog"></i> Settings
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" style="color: white; font-weight: 500;">
+                            <i class="fas fa-user-circle"></i> {{ user.get_full_name|default:user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" style="min-width: 200px;">
+                            <li><a class="dropdown-item" href="{% url 'settings:profile_edit' %}"><i class="fas fa-user"></i> Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'settings:preferences' %}"><i class="fas fa-sliders-h"></i> Preferences</a></li>
+                            <li><a class="dropdown-item" href="{% url 'settings:security' %}"><i class="fas fa-shield-alt"></i> Security</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}" class="d-inline w-100">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt"></i> Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            {% else %}
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}" style="color: white; font-weight: 500;">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}" style="color: white; font-weight: 500;">
+                            <i class="fas fa-user-plus"></i> Register
+                        </a>
+                    </li>
+                </ul>
             {% endif %}
         </div>
     </div>
