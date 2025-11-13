@@ -18,5 +18,7 @@ urlpatterns = [
     # Apps
     path('accounts/', include('accounts.urls')),
     path('transactions/', include('transactions.urls')),
+    path('savings/', include('savings.urls')),
+    path('investments/', include('investments.urls')),
     path('settings/', include('settings.urls')),
 ]

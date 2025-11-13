@@ -9,33 +9,49 @@
 
 <!-- Summary Cards -->
 <div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card border-left-primary shadow">
+    <div class="col-md-3 mb-3">
+        <div class="card border-left-primary shadow h-100">
             <div class="card-body">
-                <div class="text-primary font-weight-bold text-uppercase mb-1" style="font-size: 0.9rem;">Total Balance</div>
+                <div class="text-primary font-weight-bold text-uppercase mb-1" style="font-size: 0.85rem;">Total Net Worth</div>
                 <div class="h3 mb-0 font-weight-bold" style="color: #667eea;">
+                    ${{ total_net_worth|floatformat:2 }}
+                </div>
+                <small class="text-muted">All assets combined</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card border-left-success shadow h-100">
+            <div class="card-body">
+                <div class="text-success font-weight-bold text-uppercase mb-1" style="font-size: 0.85rem;">Accounts Balance</div>
+                <div class="h3 mb-0 font-weight-bold" style="color: #28a745;">
                     ${{ total_balance|floatformat:2 }}
                 </div>
+                <small class="text-muted">{{ account_count }} account{{ account_count|pluralize }}</small>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card border-left-success shadow">
+    <div class="col-md-3 mb-3">
+        <div class="card border-left-info shadow h-100">
             <div class="card-body">
-                <div class="text-success font-weight-bold text-uppercase mb-1" style="font-size: 0.9rem;">Total Accounts</div>
-                <div class="h3 mb-0 font-weight-bold" style="color: #28a745;">
-                    {{ account_count }}
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card border-left-info shadow">
-            <div class="card-body">
-                <div class="text-info font-weight-bold text-uppercase mb-1" style="font-size: 0.9rem;">Recent Transactions</div>
+                <div class="text-info font-weight-bold text-uppercase mb-1" style="font-size: 0.85rem;">Savings</div>
                 <div class="h3 mb-0 font-weight-bold" style="color: #17a2b8;">
-                    {{ recent_transactions|length }}
+                    ${{ total_savings|floatformat:2 }}
                 </div>
+                <small class="text-success">+${{ total_interest_earned|floatformat:2 }} interest</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card border-left-warning shadow h-100">
+            <div class="card-body">
+                <div class="text-warning font-weight-bold text-uppercase mb-1" style="font-size: 0.85rem;">Investments</div>
+                <div class="h3 mb-0 font-weight-bold" style="color: #ffc107;">
+                    ${{ total_investment_value|floatformat:2 }}
+                </div>
+                <small class="{% if investment_return >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    {% if investment_return >= 0 %}+{% endif %}${{ investment_return|floatformat:2 }} return
+                </small>
             </div>
         </div>
     </div>
@@ -102,6 +118,115 @@
                         <p class="text-muted mb-3"><i class="fas fa-inbox"></i> You haven't created any accounts yet.</p>
                         <a href="{% url 'account_create' %}" class="btn btn-primary btn-lg">
                             <i class="fas fa-plus"></i> Create Your First Account
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Savings & Investments Section -->
+<div class="row mb-4">
+    <!-- Savings Section -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); color: white;">
+                <h5 class="mb-0"><i class="fas fa-piggy-bank"></i> Savings Accounts</h5>
+            </div>
+            <div class="card-body">
+                {% if savings_accounts %}
+                    {% for savings in savings_accounts %}
+                        <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ savings.product.name }}</h6>
+                                    <small class="text-muted">{{ savings.account_number }}</small>
+                                </div>
+                                <span class="badge bg-success">{{ savings.product.interest_rate }}% APY</span>
+                            </div>
+                            <div class="mt-2">
+                                <strong class="text-primary">${{ savings.balance|floatformat:2 }}</strong>
+                                <span class="text-muted ms-2">|</span>
+                                <small class="text-success ms-2">+${{ savings.interest_earned|floatformat:2 }} earned</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'savings:savings_list' %}" class="btn btn-outline-info" data-loading>
+                            View All Savings <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-piggy-bank fa-3x text-muted mb-3"></i>
+                        <p class="text-muted mb-3">Start saving today!</p>
+                        <a href="{% url 'savings:savings_list' %}" class="btn btn-info" data-loading>
+                            <i class="fas fa-plus"></i> Open Savings Account
+                        </a>
+                    </div>
+                {% endif %}
+
+                <!-- Savings Goals -->
+                {% if active_goals %}
+                    <hr class="my-3">
+                    <h6 class="mb-3"><i class="fas fa-bullseye"></i> Active Goals</h6>
+                    {% for goal in active_goals %}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small>{{ goal.name }}</small>
+                                <small class="text-muted">{{ goal.progress_percentage|floatformat:0 }}%</small>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-success" style="width: {{ goal.progress_percentage }}%"></div>
+                            </div>
+                            <small class="text-muted">${{ goal.current_amount|floatformat:2 }} / ${{ goal.target_amount|floatformat:2 }}</small>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Investments Section -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); color: white;">
+                <h5 class="mb-0"><i class="fas fa-chart-line"></i> Investment Portfolios</h5>
+            </div>
+            <div class="card-body">
+                {% if portfolios %}
+                    {% for portfolio in portfolios %}
+                        <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ portfolio.name }}</h6>
+                                    <small class="text-muted">{{ portfolio.holdings.count }} holding{{ portfolio.holdings.count|pluralize }}</small>
+                                </div>
+                                <span class="badge bg-{% if portfolio.profit_loss >= 0 %}success{% else %}danger{% endif %}">
+                                    {% if portfolio.profit_loss >= 0 %}+{% endif %}{{ portfolio.return_percentage|floatformat:1 }}%
+                                </span>
+                            </div>
+                            <div class="mt-2">
+                                <strong class="text-primary">${{ portfolio.current_value|floatformat:2 }}</strong>
+                                <span class="text-muted ms-2">|</span>
+                                <small class="{% if portfolio.profit_loss >= 0 %}text-success{% else %}text-danger{% endif %} ms-2">
+                                    {% if portfolio.profit_loss >= 0 %}+{% endif %}${{ portfolio.profit_loss|floatformat:2 }}
+                                </small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'investments:portfolio_list' %}" class="btn btn-outline-warning" data-loading>
+                            View All Portfolios <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                        <p class="text-muted mb-3">Start investing for your future!</p>
+                        <a href="{% url 'investments:portfolio_list' %}" class="btn btn-warning" data-loading>
+                            <i class="fas fa-plus"></i> Create Portfolio
                         </a>
                     </div>
                 {% endif %}
@@ -177,38 +302,34 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-4 mb-2">
-                        <a href="{% url 'account_create' %}" class="btn btn-primary w-100">
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'account_create' %}" class="btn btn-primary w-100" data-loading>
                             <i class="fas fa-plus"></i> New Account
                         </a>
                     </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'savings:create_savings_account' %}" class="btn btn-info w-100" data-loading>
+                            <i class="fas fa-piggy-bank"></i> Open Savings
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'investments:create_portfolio' %}" class="btn btn-warning w-100" data-loading>
+                            <i class="fas fa-chart-line"></i> New Portfolio
+                        </a>
+                    </div>
                     {% if accounts %}
-                        <div class="col-md-4 mb-2">
-                            <a href="{% url 'deposit' accounts.first.pk %}" class="btn btn-success w-100">
-                                <i class="fas fa-arrow-down"></i> Deposit
-                            </a>
-                        </div>
-                        <div class="col-md-4 mb-2">
-                            <a href="{% url 'withdraw' accounts.first.pk %}" class="btn btn-warning w-100">
-                                <i class="fas fa-arrow-up"></i> Withdraw
-                            </a>
-                        </div>
-                        <div class="col-md-4 mb-2">
-                            <a href="{% url 'transfer' accounts.first.pk %}" class="btn btn-info w-100">
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'transfer' accounts.first.pk %}" class="btn btn-success w-100" data-loading>
                                 <i class="fas fa-exchange-alt"></i> Transfer
                             </a>
                         </div>
+                    {% else %}
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'transaction_list' %}" class="btn btn-outline-primary w-100" data-loading>
+                                <i class="fas fa-list"></i> Transactions
+                            </a>
+                        </div>
                     {% endif %}
-                    <div class="col-md-4 mb-2">
-                        <a href="{% url 'settings:preferences' %}" class="btn btn-secondary w-100">
-                            <i class="fas fa-sliders-h"></i> Preferences
-                        </a>
-                    </div>
-                    <div class="col-md-4 mb-2">
-                        <a href="{% url 'transaction_list' %}" class="btn btn-outline-primary w-100">
-                            <i class="fas fa-list"></i> Transactions
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
