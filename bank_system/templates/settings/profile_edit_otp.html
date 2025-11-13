@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}Profile Edit with OTP - Settings{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="list-group">
+            <a href="{% url 'settings:preferences' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-palette"></i> Preferences
+            </a>
+            <a href="{% url 'settings:profile_edit' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-user"></i> Edit Profile
+            </a>
+            <a href="{% url 'settings:profile_edit_otp' %}" class="list-group-item list-group-item-action active">
+                <i class="fas fa-lock"></i> Profile with OTP
+            </a>
+            <a href="{% url 'settings:change_password' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-key"></i> Change Password
+            </a>
+            <a href="{% url 'settings:security' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-shield-alt"></i> Security & Privacy
+            </a>
+            <a href="{% url 'settings:account_summary' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-credit-card"></i> Account Summary
+            </a>
+            <a href="{% url 'settings:notifications' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-bell"></i> Notifications
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h3 class="card-title mb-0"><i class="fas fa-lock"></i> Secure Profile Edit (OTP Verification)</h3>
+            </div>
+            <div class="card-body">
+                {% if not otp_sent %}
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle"></i> <strong>Security Notice:</strong> For your protection, you'll need to verify your identity using a One-Time Password (OTP) to edit your profile.
+                    </div>
+
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Step 1: Send OTP</h5>
+                            <p class="card-text">An OTP will be sent to your registered phone number.</p>
+                            <p class="text-muted"><strong>Phone:</strong> {{ request.user.phone|default:"Not set" }}</p>
+
+                            <form method="POST">
+                                {% csrf_token %}
+                                <button type="submit" name="send_otp" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-paper-plane"></i> Send OTP
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-success" role="alert">
+                        <i class="fas fa-check-circle"></i> <strong>OTP Sent!</strong> Check your phone for the One-Time Password.
+                    </div>
+
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Step 2: Verify OTP</h5>
+                            <p class="card-text">Enter the 6-digit code you received on your phone.</p>
+
+                            {% if otp_obj.otp_code %}
+                                <div class="alert alert-warning" role="alert">
+                                    <strong>Demo Mode:</strong> For demonstration purposes, your OTP is: <code>{{ otp_obj.otp_code }}</code>
+                                </div>
+                            {% endif %}
+
+                            <form method="POST" class="needs-validation">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="otp_code" class="form-label"><strong>Enter OTP Code</strong></label>
+                                    <input type="text" class="form-control form-control-lg text-center"
+                                           id="otp_code" name="otp_code" placeholder="000000"
+                                           maxlength="6" pattern="[0-9]{6}" inputmode="numeric"
+                                           autocomplete="off" required>
+                                    {% if form.otp_code.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.otp_code.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" name="verify_otp" class="btn btn-success btn-lg">
+                                        <i class="fas fa-check"></i> Verify OTP
+                                    </button>
+                                </div>
+                            </form>
+
+                            {% if otp_obj.otp_attempts > 0 %}
+                                <p class="text-muted mt-3">Attempts: {{ otp_obj.otp_attempts }}/3</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <form method="POST" class="mt-3">
+                        {% csrf_token %}
+                        <button type="submit" name="send_otp" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo"></i> Resend OTP
+                        </button>
+                    </form>
+                {% endif %}
+
+                <hr class="my-4">
+                <a href="{% url 'settings:dashboard' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Settings
+                </a>
+            </div>
+        </div>
+
+        <!-- Info Cards -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card border-info">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-shield-alt"></i> Why OTP?</h5>
+                        <p class="card-text small">OTP (One-Time Password) adds an extra layer of security to protect your account from unauthorized access.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-mobile-alt"></i> Demo Mode</h5>
+                        <p class="card-text small">This is a demonstration. The OTP is displayed on screen instead of being sent to your phone.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
