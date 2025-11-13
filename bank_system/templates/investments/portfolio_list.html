@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Investment Portfolios{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1><i class="fas fa-chart-line text-primary"></i> Investment Portfolios</h1>
+            <p class="text-muted">Track and manage your investment portfolio</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'investments:create_portfolio' %}" class="btn btn-primary" data-loading>
+                <i class="fas fa-plus"></i> Create Portfolio
+            </a>
+            <a href="{% url 'investments:products_list' %}" class="btn btn-outline-primary" data-loading>
+                <i class="fas fa-shopping-cart"></i> Browse Products
+            </a>
+        </div>
+    </div>
+
+    <!-- Portfolio Summary -->
+    {% if portfolios %}
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="text-white-50">Total Invested</h6>
+                    <h3 class="mb-0">${{ total_invested|floatformat:2 }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h6 class="text-white-50">Current Value</h6>
+                    <h3 class="mb-0">${{ total_value|floatformat:2 }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-{% if total_return >= 0 %}info{% else %}danger{% endif %} text-white">
+                <div class="card-body">
+                    <h6 class="text-white-50">Total Return</h6>
+                    <h3 class="mb-0">
+                        {% if total_return >= 0 %}+{% endif %}${{ total_return|floatformat:2 }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolios -->
+    <div class="row g-4">
+        {% for portfolio in portfolios %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="card-title mb-1">{{ portfolio.name }}</h5>
+                            <small class="text-muted">{{ portfolio.account.account_number }}</small>
+                        </div>
+                        <span class="badge bg-{{ portfolio.status == 'active' and 'success' or 'secondary' }}">
+                            {{ portfolio.get_status_display }}
+                        </span>
+                    </div>
+
+                    {% if portfolio.description %}
+                    <p class="text-muted small">{{ portfolio.description|truncatewords:20 }}</p>
+                    {% endif %}
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <small class="text-muted d-block">Invested</small>
+                                <strong>${{ portfolio.total_invested|floatformat:2 }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <small class="text-muted d-block">Current Value</small>
+                                <strong>${{ portfolio.current_value|floatformat:2 }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="small text-muted">Return</span>
+                            <span class="{% if portfolio.profit_loss >= 0 %}text-success{% else %}text-danger{% endif %} fw-bold">
+                                {% if portfolio.profit_loss >= 0 %}+{% endif %}${{ portfolio.profit_loss|floatformat:2 }}
+                                ({{ portfolio.return_percentage|floatformat:2 }}%)
+                            </span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar {% if portfolio.profit_loss >= 0 %}bg-success{% else %}bg-danger{% endif %}"
+                                 style="width: {{ portfolio.return_percentage|add:50 }}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'investments:portfolio_detail' portfolio.pk %}" class="btn btn-outline-primary btn-sm" data-loading>
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                        <a href="{% url 'investments:buy_investment' portfolio.pk %}" class="btn btn-primary btn-sm" data-loading>
+                            <i class="fas fa-shopping-cart"></i> Buy Investments
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center py-5">
+        <i class="fas fa-chart-line fa-3x mb-3"></i>
+        <h4>No Investment Portfolios Yet</h4>
+        <p>Start investing today and build your wealth!</p>
+        <a href="{% url 'investments:create_portfolio' %}" class="btn btn-primary" data-loading>
+            <i class="fas fa-plus"></i> Create Your First Portfolio
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Investment Platforms -->
+    {% if platforms %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="mb-4"><i class="fas fa-building"></i> Investment Platforms</h3>
+        </div>
+        {% for platform in platforms %}
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <i class="fas {{ platform.icon|default:'fa-chart-pie' }} fa-3x mb-3" style="color: {{ platform.color }}"></i>
+                    <h5 class="card-title">{{ platform.name }}</h5>
+                    <p class="card-text small text-muted">{{ platform.get_platform_type_display }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

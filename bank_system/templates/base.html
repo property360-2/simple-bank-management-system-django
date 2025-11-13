@@ -153,6 +153,101 @@
         main {
             min-height: calc(100vh - 200px);
         }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            min-width: 300px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .toast.hiding {
+            animation: slideOutRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Button Loading State */
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
     </style>
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -160,6 +255,14 @@
 </head>
 <body>
     {% include 'includes/_navbar.html' %}
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
 
     <main class="container my-4">
         {% include 'includes/_alerts.html' %}
@@ -178,6 +281,127 @@
         {% if request.user.is_authenticated and request.user.preferences.font_size %}
         document.documentElement.setAttribute('data-font-size', '{{ request.user.preferences.font_size }}');
         {% endif %}
+
+        // Toast Notification System
+        const showToast = (message, type = 'info', duration = 5000) => {
+            const toastContainer = document.getElementById('toastContainer');
+            const toastId = 'toast-' + Date.now();
+
+            const bgColors = {
+                success: 'bg-success',
+                error: 'bg-danger',
+                warning: 'bg-warning',
+                info: 'bg-info'
+            };
+
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+
+            const toast = document.createElement('div');
+            toast.id = toastId;
+            toast.className = `toast ${bgColors[type] || 'bg-info'} text-white`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="toast-header ${bgColors[type] || 'bg-info'} text-white">
+                    <i class="fas ${icons[type] || 'fa-info-circle'} me-2"></i>
+                    <strong class="me-auto">${type.charAt(0).toUpperCase() + type.slice(1)}</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            const bsToast = new bootstrap.Toast(toast, {
+                autohide: true,
+                delay: duration
+            });
+
+            bsToast.show();
+
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+
+            return bsToast;
+        };
+
+        // Loading Overlay Functions
+        const showLoading = () => {
+            document.getElementById('loadingOverlay').classList.add('show');
+        };
+
+        const hideLoading = () => {
+            document.getElementById('loadingOverlay').classList.remove('show');
+        };
+
+        // Button Loading State
+        const setButtonLoading = (button, loading = true) => {
+            if (loading) {
+                button.classList.add('btn-loading');
+                button.disabled = true;
+                button.dataset.originalText = button.innerHTML;
+                button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Loading...';
+            } else {
+                button.classList.remove('btn-loading');
+                button.disabled = false;
+                if (button.dataset.originalText) {
+                    button.innerHTML = button.dataset.originalText;
+                }
+            }
+        };
+
+        // Form Loading State Handler
+        const handleFormSubmit = (form) => {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                setButtonLoading(submitBtn, true);
+            }
+            showLoading();
+        };
+
+        // Add loading state to all forms
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auto-show toast for Django messages
+            {% if messages %}
+                {% for message in messages %}
+                    showToast('{{ message }}', '{{ message.tags }}');
+                {% endfor %}
+            {% endif %}
+
+            // Add form submit handlers
+            document.querySelectorAll('form:not(.no-loading)').forEach(form => {
+                form.addEventListener('submit', () => handleFormSubmit(form));
+            });
+
+            // Add loading to links with data-loading attribute
+            document.querySelectorAll('a[data-loading]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (!link.getAttribute('href').startsWith('#')) {
+                        showLoading();
+                    }
+                });
+            });
+        });
+
+        // Global error handler
+        window.addEventListener('error', (e) => {
+            hideLoading();
+            // Optionally show error toast
+            // showToast('An error occurred. Please try again.', 'error');
+        });
+
+        // Make functions available globally
+        window.showToast = showToast;
+        window.showLoading = showLoading;
+        window.hideLoading = hideLoading;
+        window.setButtonLoading = setButtonLoading;
     </script>
 
     {% block extra_js %}{% endblock %}

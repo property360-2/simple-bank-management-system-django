@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}Savings Accounts{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1><i class="fas fa-piggy-bank text-primary"></i> Savings Accounts</h1>
+            <p class="text-muted">Grow your money with high-interest savings accounts</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'savings:create_savings_account' %}" class="btn btn-primary" data-loading>
+                <i class="fas fa-plus"></i> Open Savings Account
+            </a>
+            <a href="{% url 'savings:goals_list' %}" class="btn btn-outline-primary" data-loading>
+                <i class="fas fa-bullseye"></i> My Goals
+            </a>
+        </div>
+    </div>
+
+    <!-- Savings Accounts -->
+    {% if savings_accounts %}
+    <div class="row g-4 mb-5">
+        {% for account in savings_accounts %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="card-title mb-1">{{ account.product.name }}</h5>
+                            <small class="text-muted">{{ account.account_number }}</small>
+                        </div>
+                        <span class="badge bg-{{ account.status == 'active' and 'success' or 'secondary' }}">
+                            {{ account.get_status_display }}
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <h3 class="mb-0">${{ account.balance|floatformat:2 }}</h3>
+                        <small class="text-success">
+                            <i class="fas fa-arrow-up"></i> ${{ account.interest_earned|floatformat:2 }} earned
+                        </small>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <small class="text-muted d-block">Interest Rate</small>
+                                <strong>{{ account.product.interest_rate }}%</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <small class="text-muted d-block">Compounding</small>
+                                <strong>{{ account.product.get_compounding_frequency_display }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <a href="{% url 'savings:savings_detail' account.pk %}" class="btn btn-outline-primary" data-loading>
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center py-5">
+        <i class="fas fa-piggy-bank fa-3x mb-3"></i>
+        <h4>No Savings Accounts Yet</h4>
+        <p>Start saving today and watch your money grow!</p>
+        <a href="{% url 'savings:create_savings_account' %}" class="btn btn-primary" data-loading>
+            <i class="fas fa-plus"></i> Open Your First Savings Account
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Available Products -->
+    <div class="row">
+        <div class="col-12">
+            <h3 class="mb-4"><i class="fas fa-star"></i> Available Savings Products</h3>
+        </div>
+        {% for product in products %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ product.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <h2 class="text-primary mb-0">{{ product.interest_rate }}%</h2>
+                        <small class="text-muted">Annual Percentage Yield (APY)</small>
+                    </div>
+
+                    <p class="mb-3">{{ product.description }}</p>
+
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            Min Balance: <strong>${{ product.min_balance }}</strong>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            Compounding: <strong>{{ product.get_compounding_frequency_display }}</strong>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            Withdrawals: <strong>{{ product.withdrawal_limit }}/month</strong>
+                        </li>
+                    </ul>
+
+                    <div class="d-grid">
+                        <a href="{% url 'savings:create_savings_account' %}" class="btn btn-primary" data-loading>
+                            Open Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-warning">
+                No savings products available at the moment.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
