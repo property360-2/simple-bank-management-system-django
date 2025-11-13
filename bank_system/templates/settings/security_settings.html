@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %}Security & Privacy - Settings{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="list-group">
+            <a href="{% url 'settings:preferences' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-palette"></i> Preferences
+            </a>
+            <a href="{% url 'settings:profile_edit' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-user"></i> Edit Profile
+            </a>
+            <a href="{% url 'settings:profile_edit_otp' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-lock"></i> Profile with OTP
+            </a>
+            <a href="{% url 'settings:change_password' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-key"></i> Change Password
+            </a>
+            <a href="{% url 'settings:security' %}" class="list-group-item list-group-item-action active">
+                <i class="fas fa-shield-alt"></i> Security & Privacy
+            </a>
+            <a href="{% url 'settings:account_summary' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-credit-card"></i> Account Summary
+            </a>
+            <a href="{% url 'settings:notifications' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-bell"></i> Notifications
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h3 class="card-title mb-0"><i class="fas fa-shield-alt"></i> Security & Privacy Settings</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" class="needs-validation">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <h5><i class="fas fa-lock"></i> Two-Factor Authentication</h5>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="two_factor_enabled" id="two_factor_enabled" {% if user_prefs.two_factor_enabled %}checked{% endif %}>
+                            <label class="form-check-label" for="two_factor_enabled">
+                                Enable Two-Factor Authentication (OTP via SMS)
+                            </label>
+                        </div>
+                        <p class="text-muted mt-2">
+                            When enabled, you'll need to verify your identity using an OTP code sent to your phone when logging in from a new device.
+                        </p>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Save Security Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Security Alerts -->
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0"><i class="fas fa-history"></i> Recent Security Activity</h5>
+            </div>
+            <div class="card-body">
+                {% if security_logs %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Activity</th>
+                                    <th>Date & Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in security_logs %}
+                                    <tr>
+                                        <td>
+                                            <i class="fas fa-{{ log.get_activity_display|lower }} text-primary"></i>
+                                            {{ log.get_activity_display }}
+                                        </td>
+                                        <td>{{ log.timestamp|date:"M d, Y H:i" }}</td>
+                                        <td>
+                                            {% if log.status == 'success' %}
+                                                <span class="badge bg-success">Success</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Failed</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No security activities recorded yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Privacy Tips -->
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0"><i class="fas fa-info-circle"></i> Security Best Practices</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong><i class="fas fa-check text-success"></i> Keep your password strong:</strong> Use a mix of uppercase, lowercase, numbers, and special characters.</li>
+                    <li class="list-group-item"><strong><i class="fas fa-check text-success"></i> Enable 2FA:</strong> Add an extra layer of security with two-factor authentication.</li>
+                    <li class="list-group-item"><strong><i class="fas fa-check text-success"></i> Never share credentials:</strong> Don't share your login details with anyone, not even bank staff.</li>
+                    <li class="list-group-item"><strong><i class="fas fa-check text-success"></i> Monitor activity:</strong> Regularly review your security logs for suspicious activity.</li>
+                    <li class="list-group-item"><strong><i class="fas fa-check text-success"></i> Use secure networks:</strong> Avoid using public Wi-Fi for sensitive transactions.</li>
+                    <li class="list-group-item"><strong><i class="fas fa-check text-success"></i> Keep software updated:</strong> Install security patches and OS updates promptly.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

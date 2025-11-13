@@ -18,4 +18,5 @@ urlpatterns = [
     # Apps
     path('accounts/', include('accounts.urls')),
     path('transactions/', include('transactions.urls')),
+    path('settings/', include('settings.urls')),
 ]
