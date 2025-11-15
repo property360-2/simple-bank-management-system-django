@@ -41,7 +41,7 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-auto">
-                            <div class="p-3 bg-light rounded" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                            <div class="p-3 bg-secondary rounded" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
                                 <i class="fas fa-{% if fraud.risk_level == 'high' %}exclamation-triangle{% elif fraud.risk_level == 'medium' %}question-circle{% else %}check-circle{% endif %} fa-2x text-{% if fraud.risk_level == 'high' %}danger{% elif fraud.risk_level == 'medium' %}warning{% else %}success{% endif %}"></i>
                             </div>
                         </div>
@@ -68,7 +68,7 @@
 
             <!-- Transaction Details -->
             <div class="card mb-4">
-                <div class="card-header bg-light">
+                <div class="card-header bg-secondary">
                     <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Transaction Details</h5>
                 </div>
                 <div class="card-body">
@@ -111,7 +111,7 @@
 
             <!-- Fraud Indicators -->
             <div class="card mb-4">
-                <div class="card-header bg-light">
+                <div class="card-header bg-secondary">
                     <h5 class="mb-0"><i class="fas fa-flag me-2"></i>Fraud Indicators</h5>
                 </div>
                 <div class="card-body">
@@ -172,7 +172,7 @@
 
             <!-- Notes -->
             <div class="card mb-4">
-                <div class="card-header bg-light">
+                <div class="card-header bg-secondary">
                     <h5 class="mb-0"><i class="fas fa-sticky-note me-2"></i>Admin Notes</h5>
                 </div>
                 <div class="card-body">
@@ -189,7 +189,7 @@
         <div class="col-lg-4">
             <!-- User Information -->
             <div class="card mb-4">
-                <div class="card-header bg-light">
+                <div class="card-header bg-secondary">
                     <h5 class="mb-0"><i class="fas fa-user me-2"></i>User Information</h5>
                 </div>
                 <div class="card-body">
@@ -214,7 +214,7 @@
 
             <!-- Actions -->
             <div class="card mb-4">
-                <div class="card-header bg-light">
+                <div class="card-header bg-secondary">
                     <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Actions</h5>
                 </div>
                 <div class="card-body">
