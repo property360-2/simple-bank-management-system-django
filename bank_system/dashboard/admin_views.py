@@ -223,6 +223,7 @@ def fraud_detection_list(request):
     """List and manage fraud alerts"""
     status_filter = request.GET.get('status')
     risk_filter = request.GET.get('risk')
+    is_ajax = request.GET.get('ajax') == 'true'
 
     try:
         frauds = FraudDetection.objects.all().order_by('-detected_at')
@@ -250,6 +251,11 @@ def fraud_detection_list(request):
         'current_status': status_filter,
         'current_risk': risk_filter,
     }
+
+    # Return partial template for AJAX requests (just the table)
+    if is_ajax:
+        return render(request, 'admin/fraud_detection_table.html', context)
+
     return render(request, 'admin/fraud_detection_list.html', context)
 
 

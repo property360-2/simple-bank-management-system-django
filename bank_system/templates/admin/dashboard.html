@@ -166,20 +166,6 @@
     <h4 class="mb-4 mt-5"><i class="fas fa-chart-bar me-2"></i>Analytics & Visualizations</h4>
 
     <div class="row g-4 mb-4">
-        <!-- Transaction Volume Chart -->
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-exchange-alt me-2"></i>Transaction Volume
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="transactionChart" height="80"></canvas>
-                </div>
-            </div>
-        </div>
-
         <!-- Account Type Distribution -->
         <div class="col-lg-6">
             <div class="card">
@@ -190,22 +176,6 @@
                 </div>
                 <div class="card-body">
                     <canvas id="accountTypeChart" height="80"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-4 mb-4">
-        <!-- User Registration Trend -->
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-user-plus me-2"></i>User Registration Trend
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="userRegistrationChart" height="80"></canvas>
                 </div>
             </div>
         </div>
@@ -346,9 +316,7 @@ const chartColors = {
 };
 
 // Parse data from Django template
-const transactionData = {{ transaction_chart_data_json|safe }};
 const accountTypeData = {{ account_type_data_json|safe }};
-const userRegistrationData = {{ user_registration_data_json|safe }};
 const transactionTypeData = {{ transaction_type_data_json|safe }};
 const fraudData = {{ fraud_data_json|safe }};
 
@@ -376,35 +344,6 @@ const commonOptions = {
     }
 };
 
-// Transaction Volume Chart
-const transactionCtx = document.getElementById('transactionChart').getContext('2d');
-new Chart(transactionCtx, {
-    type: 'line',
-    data: {
-        labels: Object.keys(transactionData),
-        datasets: [{
-            label: 'Transaction Count',
-            data: Object.values(transactionData),
-            borderColor: chartColors.primary,
-            backgroundColor: 'rgba(78, 115, 223, 0.1)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: chartColors.primary,
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2
-        }]
-    },
-    options: {
-        ...commonOptions,
-        plugins: {
-            ...commonOptions.plugins,
-            filler: { propagate: true }
-        }
-    }
-});
-
 // Account Type Distribution Chart
 const accountTypeCtx = document.getElementById('accountTypeChart').getContext('2d');
 new Chart(accountTypeCtx, {
@@ -431,35 +370,6 @@ new Chart(accountTypeCtx, {
                 ...commonOptions.plugins.legend,
                 position: 'bottom'
             }
-        }
-    }
-});
-
-// User Registration Trend Chart
-const userRegistrationCtx = document.getElementById('userRegistrationChart').getContext('2d');
-new Chart(userRegistrationCtx, {
-    type: 'line',
-    data: {
-        labels: Object.keys(userRegistrationData),
-        datasets: [{
-            label: 'New Users',
-            data: Object.values(userRegistrationData),
-            borderColor: chartColors.success,
-            backgroundColor: 'rgba(28, 200, 138, 0.1)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: chartColors.success,
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2
-        }]
-    },
-    options: {
-        ...commonOptions,
-        plugins: {
-            ...commonOptions.plugins,
-            filler: { propagate: true }
         }
     }
 });
