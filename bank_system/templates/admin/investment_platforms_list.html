@@ -1,0 +1,96 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Investment Platforms{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="fas fa-building me-2"></i>Investment Platforms</h1>
+            <p>Manage investment platforms and configurations</p>
+        </div>
+        <a href="{% url 'admin:investment_platform_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add Platform
+        </a>
+    </div>
+</div>
+
+<div class="container-fluid px-4 pb-4">
+    {% if messages %}
+    <div class="row mb-4">
+        <div class="col-12">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Platforms Table -->
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th width="40%">Platform</th>
+                        <th width="20%">Type</th>
+                        <th width="15%">Products</th>
+                        <th width="15%">Status</th>
+                        <th width="10%">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for platform in platforms %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="fas {{ platform.icon|default:'fa-chart-pie' }} fa-lg me-3" style="color: {{ platform.color }}"></i>
+                                <div>
+                                    <strong>{{ platform.name }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ platform.description|truncatewords:10 }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">{{ platform.get_platform_type_display }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">{{ platform.products.count }} products</span>
+                        </td>
+                        <td>
+                            {% if platform.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a href="{% url 'admin:investment_platform_edit' platform.pk %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin:investment_platform_delete' platform.pk %}" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4">
+                            <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">No investment platforms found</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
