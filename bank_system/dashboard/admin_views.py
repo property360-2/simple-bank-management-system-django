@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db.models import Sum, Count, Q, Avg
 from django.utils import timezone
@@ -10,15 +9,10 @@ from transactions.models import Transaction, FraudDetection
 from savings.models import SavingsProduct, SavingsAccount
 from investments.models import InvestmentProduct, Portfolio
 from users.models import User
+from users.decorators import manager_required
 
 
-def admin_required(user):
-    """Check if user is staff/admin"""
-    return user.is_staff
-
-
-@login_required
-@user_passes_test(admin_required)
+@manager_required
 def admin_dashboard(request):
     """Admin dashboard with business analytics"""
     # User analytics
@@ -81,8 +75,7 @@ def admin_dashboard(request):
     return render(request, 'admin/dashboard.html', context)
 
 
-@login_required
-@user_passes_test(admin_required)
+@manager_required
 def fraud_detection_list(request):
     """List and manage fraud alerts"""
     status_filter = request.GET.get('status')
@@ -113,8 +106,7 @@ def fraud_detection_list(request):
     return render(request, 'admin/fraud_detection_list.html', context)
 
 
-@login_required
-@user_passes_test(admin_required)
+@manager_required
 def fraud_detection_detail(request, pk):
     """View and review fraud alert details"""
     fraud = get_object_or_404(FraudDetection, pk=pk)

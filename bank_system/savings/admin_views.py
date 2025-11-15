@@ -1,16 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from .models import SavingsProduct
 from .admin_forms import SavingsProductForm
+from users.decorators import manager_required
 
 
-def admin_required(user):
-    return user.is_staff
-
-
-@login_required
-@user_passes_test(admin_required)
+@manager_required
 def savings_products_list(request):
     """List all savings products"""
     products = SavingsProduct.objects.all()
@@ -19,8 +14,7 @@ def savings_products_list(request):
     return render(request, 'admin/savings_products_list.html', context)
 
 
-@login_required
-@user_passes_test(admin_required)
+@manager_required
 def savings_product_create(request):
     """Create a new savings product"""
     if request.method == 'POST':
@@ -36,8 +30,7 @@ def savings_product_create(request):
     return render(request, 'admin/savings_product_form.html', context)
 
 
-@login_required
-@user_passes_test(admin_required)
+@manager_required
 def savings_product_edit(request, pk):
     """Edit a savings product"""
     product = get_object_or_404(SavingsProduct, pk=pk)
@@ -55,8 +48,7 @@ def savings_product_edit(request, pk):
     return render(request, 'admin/savings_product_form.html', context)
 
 
-@login_required
-@user_passes_test(admin_required)
+@manager_required
 def savings_product_delete(request, pk):
     """Delete a savings product"""
     product = get_object_or_404(SavingsProduct, pk=pk)

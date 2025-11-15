@@ -1,16 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from .models import InvestmentProduct, InvestmentPlatform
 from .admin_forms import InvestmentProductForm, InvestmentPlatformForm
+from users.decorators import manager_required
 
 
-def admin_required(user):
-    return user.is_staff
-
-
-@login_required
-@user_passes_test(admin_required)
+@manager_required
 def investment_products_list(request):
     """List all investment products"""
     products = InvestmentProduct.objects.all()
@@ -28,8 +23,7 @@ def investment_products_list(request):
     return render(request, 'admin/investment_products_list.html', context)
 
 
-@login_required
-@user_passes_test(admin_required)
+@manager_required
 def investment_product_create(request):
     """Create a new investment product"""
     if request.method == 'POST':
@@ -45,8 +39,7 @@ def investment_product_create(request):
     return render(request, 'admin/investment_product_form.html', context)
 
 
-@login_required
-@user_passes_test(admin_required)
+@manager_required
 def investment_product_edit(request, pk):
     """Edit an investment product"""
     product = get_object_or_404(InvestmentProduct, pk=pk)
@@ -64,8 +57,7 @@ def investment_product_edit(request, pk):
     return render(request, 'admin/investment_product_form.html', context)
 
 
-@login_required
-@user_passes_test(admin_required)
+@manager_required
 def investment_product_delete(request, pk):
     """Delete an investment product"""
     product = get_object_or_404(InvestmentProduct, pk=pk)
@@ -79,8 +71,7 @@ def investment_product_delete(request, pk):
     return render(request, 'admin/confirm_delete.html', context)
 
 
-@login_required
-@user_passes_test(admin_required)
+@manager_required
 def investment_platforms_list(request):
     """List all investment platforms"""
     platforms = InvestmentPlatform.objects.all()
@@ -89,8 +80,7 @@ def investment_platforms_list(request):
     return render(request, 'admin/investment_platforms_list.html', context)
 
 
-@login_required
-@user_passes_test(admin_required)
+@manager_required
 def investment_platform_create(request):
     """Create a new investment platform"""
     if request.method == 'POST':
@@ -106,8 +96,7 @@ def investment_platform_create(request):
     return render(request, 'admin/investment_platform_form.html', context)
 
 
-@login_required
-@user_passes_test(admin_required)
+@manager_required
 def investment_platform_edit(request, pk):
     """Edit an investment platform"""
     platform = get_object_or_404(InvestmentPlatform, pk=pk)
@@ -125,8 +114,7 @@ def investment_platform_edit(request, pk):
     return render(request, 'admin/investment_platform_form.html', context)
 
 
-@login_required
-@user_passes_test(admin_required)
+@manager_required
 def investment_platform_delete(request, pk):
     """Delete an investment platform"""
     platform = get_object_or_404(InvestmentPlatform, pk=pk)
