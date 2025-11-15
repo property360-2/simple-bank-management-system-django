@@ -54,7 +54,7 @@ def preferences(request):
             form.save()
             messages.success(
                 request,
-                f'Your preferences have been updated! Currency changed to {preferences.get_currency_display()}'
+                f'Your preferences have been updated! Currency set to {preferences.currency}'
             )
             return redirect('settings:preferences')
     else:
