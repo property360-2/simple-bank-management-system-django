@@ -1461,11 +1461,26 @@ body[data-font-size="large"] small { font-size: 16px; }
     align-items: center;
     margin-bottom: 0 !important;
     cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s ease;
+}
+
+.theme-radio-group label:hover {
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 .theme-radio-group input[type="radio"] {
-    margin-right: 0.5rem;
+    margin-right: 0.75rem;
+    margin-top: 0.25rem;
+    flex-shrink: 0;
     cursor: pointer;
+    width: 1rem;
+    height: 1rem;
+}
+
+body[data-theme="light"] .theme-radio-group label:hover {
+    background-color: rgba(0, 0, 0, 0.08);
 }
 
 /* ============================================================================
