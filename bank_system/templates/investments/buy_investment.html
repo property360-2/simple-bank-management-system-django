@@ -94,7 +94,7 @@
                                                 <h5 class="modal-title">Buy {{ product.name }}</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
-                                            <form method="post" data-product-price="{{ product.current_price }}">
+                                            <form method="post" data-product-price="{{ product.current_price }}" novalidate>
                                                 {% csrf_token %}
                                                 <div class="modal-body">
                                                     <input type="hidden" name="product" value="{{ product.id }}">
@@ -145,7 +145,7 @@
                                                             <strong>Amount to Invest</strong>
                                                         </label>
                                                         <input type="number" class="form-control form-control-lg" name="amount" id="amount{{ product.id }}"
-                                                               placeholder="Enter amount (e.g., 100, 500, 1000)" min="0.01" step="0.01" novalidate onchange="updateBuyCostByAmount{{ product.id }}()" oninput="updateBuyCostByAmount{{ product.id }}()">
+                                                               placeholder="Enter amount (e.g., 100, 500, 1000)" min="0.01" step="0.01" onchange="updateBuyCostByAmount{{ product.id }}()" oninput="updateBuyCostByAmount{{ product.id }}()">
                                                         <small class="form-text text-muted d-block mt-2">
                                                             <i class="fas fa-info-circle"></i> Enter the amount you want to invest, we'll calculate the quantity
                                                         </small>
