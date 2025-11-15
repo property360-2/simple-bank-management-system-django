@@ -154,55 +154,6 @@
         </div>
     </div>
 
-    <!-- Charts Section -->
-    <h4 class="mb-4 mt-5"><i class="fas fa-chart-bar me-2"></i>Analytics & Visualizations</h4>
-
-    <div class="row g-4 mb-4">
-        <!-- Account Type Distribution -->
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-wallet me-2"></i>Account Type Distribution
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="accountTypeChart" height="80"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Transaction Type Distribution -->
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-list-check me-2"></i>Transaction Type Distribution
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="transactionTypeChart" height="80"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-4 mb-4">
-        <!-- Fraud Distribution -->
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-exclamation-triangle me-2"></i>Fraud Distribution by Risk Level
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="fraudChart" height="80"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Pending Fraud Alerts -->
     {% if fraud_alerts %}
     <div class="card mb-4">
@@ -291,11 +242,6 @@ const chartColors = {
     light: '#ecf0f1',
     dark: '#2c3e50'
 };
-
-// Parse data from Django template
-const accountTypeData = {{ account_type_data_json|safe }};
-const transactionTypeData = {{ transaction_type_data_json|safe }};
-const fraudData = {{ fraud_data_json|safe }};
 
 // Common chart options
 const commonOptions = {
