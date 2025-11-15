@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" data-theme="{% if request.user.is_authenticated and request.user.preferences.theme %}{{ request.user.preferences.theme }}{% else %}light{% endif %}">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Bank System{% endblock %}</title>
@@ -36,37 +36,6 @@
             --font-size-sm: 14px;
             --font-size-lg: 18px;
             --font-size-xl: 20px;
-        }
-
-        html[data-theme="dark"] {
-            --bg-primary: #1a1a1a;
-            --bg-secondary: #2d2d2d;
-            --text-primary: #ffffff;
-            --text-secondary: #b0b0b0;
-            --border-color: #404040;
-            --card-bg: #252525;
-            --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.5);
-        }
-
-        html[data-font-size="small"] {
-            --font-size-base: 14px;
-            --font-size-sm: 12px;
-            --font-size-lg: 16px;
-            --font-size-xl: 18px;
-        }
-
-        html[data-font-size="large"] {
-            --font-size-base: 18px;
-            --font-size-sm: 16px;
-            --font-size-lg: 20px;
-            --font-size-xl: 22px;
-        }
-
-        html[data-font-size="extra-large"] {
-            --font-size-base: 20px;
-            --font-size-sm: 18px;
-            --font-size-lg: 22px;
-            --font-size-xl: 24px;
         }
 
         * {
@@ -277,11 +246,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Set font size from preferences
-        {% if request.user.is_authenticated and request.user.preferences.font_size %}
-        document.documentElement.setAttribute('data-font-size', '{{ request.user.preferences.font_size }}');
-        {% endif %}
-
         // Toast Notification System
         const showToast = (message, type = 'info', duration = 5000) => {
             const toastContainer = document.getElementById('toastContainer');
