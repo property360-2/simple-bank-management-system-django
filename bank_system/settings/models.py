@@ -5,8 +5,20 @@ User = get_user_model()
 
 class UserPreferences(models.Model):
     """User preferences for personalization"""
+    THEME_CHOICES = (
+        ('dark', 'Dark Mode'),
+        ('light', 'Light Mode'),
+    )
+    FONT_SIZE_CHOICES = (
+        ('small', 'Small'),
+        ('medium', 'Medium'),
+        ('large', 'Large'),
+    )
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='preferences')
     currency = models.CharField(max_length=3, default='USD')
+    theme = models.CharField(max_length=10, choices=THEME_CHOICES, default='dark')
+    font_size = models.CharField(max_length=10, choices=FONT_SIZE_CHOICES, default='medium')
     show_balance = models.BooleanField(default=True, help_text="Show account balance on dashboard")
     dashboard_cards = models.JSONField(default=dict, blank=True, help_text="JSON field for dashboard widget preferences")
     created_at = models.DateTimeField(auto_now_add=True)
