@@ -1248,6 +1248,158 @@ a:hover {
 }
 
 /* ============================================================================
+   THEME PERSONALIZATION
+   ============================================================================ */
+
+/* Light Mode Theme */
+body[data-theme="light"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f6f8fa;
+    --bg-tertiary: #eaeef2;
+    --text-primary: #24292f;
+    --text-secondary: #57606a;
+    --text-tertiary: #6e7681;
+    --border-color: #d0d7de;
+    --border-subtle: #eaeef2;
+}
+
+body[data-theme="light"] .card {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+body[data-theme="light"] .card-header {
+    background-color: var(--bg-tertiary) !important;
+    border-color: var(--border-color);
+    color: var(--text-primary) !important;
+}
+
+body[data-theme="light"] .form-control,
+body[data-theme="light"] .form-select {
+    background-color: var(--bg-primary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+body[data-theme="light"] .form-control:focus,
+body[data-theme="light"] .form-select:focus {
+    background-color: var(--bg-primary);
+    border-color: #58a6ff;
+    color: var(--text-primary);
+}
+
+body[data-theme="light"] .table {
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+body[data-theme="light"] .table thead th {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+body[data-theme="light"] .table tbody tr {
+    border-color: var(--border-subtle);
+}
+
+body[data-theme="light"] .table tbody tr:hover {
+    background-color: var(--bg-secondary);
+}
+
+body[data-theme="light"] .alert {
+    border-color: var(--border-color);
+}
+
+body[data-theme="light"] .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+body[data-theme="light"] .navbar {
+    background-color: var(--bg-secondary) !important;
+    border-bottom: 1px solid var(--border-color);
+}
+
+body[data-theme="light"] .navbar-light .navbar-nav .nav-link {
+    color: var(--text-primary);
+}
+
+body[data-theme="light"] .navbar-light .navbar-nav .nav-link:hover {
+    color: #58a6ff;
+}
+
+body[data-theme="light"] input,
+body[data-theme="light"] textarea,
+body[data-theme="light"] select {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* ============================================================================
+   FONT SIZE PERSONALIZATION
+   ============================================================================ */
+
+body[data-font-size="small"] {
+    --font-size-base: 13px;
+    --font-size-sm: 11px;
+    --font-size-lg: 15px;
+}
+
+body[data-font-size="small"] {
+    font-size: 13px;
+}
+
+body[data-font-size="small"] h1 { font-size: 1.75rem; }
+body[data-font-size="small"] h2 { font-size: 1.5rem; }
+body[data-font-size="small"] h3 { font-size: 1.25rem; }
+body[data-font-size="small"] h4 { font-size: 1.1rem; }
+body[data-font-size="small"] h5 { font-size: 1rem; }
+body[data-font-size="small"] h6 { font-size: 0.9rem; }
+body[data-font-size="small"] .btn { font-size: 12px; }
+body[data-font-size="small"] .form-control { font-size: 13px; }
+body[data-font-size="small"] .table { font-size: 12px; }
+body[data-font-size="small"] small { font-size: 11px; }
+
+/* Medium (Default) */
+body[data-font-size="medium"] {
+    --font-size-base: 16px;
+    --font-size-sm: 14px;
+    --font-size-lg: 18px;
+    font-size: 16px;
+}
+
+body[data-font-size="medium"] h1 { font-size: 2rem; }
+body[data-font-size="medium"] h2 { font-size: 1.75rem; }
+body[data-font-size="medium"] h3 { font-size: 1.5rem; }
+body[data-font-size="medium"] h4 { font-size: 1.25rem; }
+body[data-font-size="medium"] h5 { font-size: 1.1rem; }
+body[data-font-size="medium"] h6 { font-size: 1rem; }
+body[data-font-size="medium"] .btn { font-size: 15px; }
+body[data-font-size="medium"] .form-control { font-size: 16px; }
+body[data-font-size="medium"] .table { font-size: 15px; }
+body[data-font-size="medium"] small { font-size: 14px; }
+
+/* Large */
+body[data-font-size="large"] {
+    --font-size-base: 18px;
+    --font-size-sm: 16px;
+    --font-size-lg: 20px;
+    font-size: 18px;
+}
+
+body[data-font-size="large"] h1 { font-size: 2.25rem; }
+body[data-font-size="large"] h2 { font-size: 2rem; }
+body[data-font-size="large"] h3 { font-size: 1.75rem; }
+body[data-font-size="large"] h4 { font-size: 1.5rem; }
+body[data-font-size="large"] h5 { font-size: 1.25rem; }
+body[data-font-size="large"] h6 { font-size: 1.1rem; }
+body[data-font-size="large"] .btn { font-size: 17px; }
+body[data-font-size="large"] .form-control { font-size: 18px; }
+body[data-font-size="large"] .table { font-size: 17px; }
+body[data-font-size="large"] small { font-size: 16px; }
+
+/* ============================================================================
    RESPONSIVE DESIGN
    ============================================================================ */
 

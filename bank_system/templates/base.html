@@ -17,7 +17,7 @@
 
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body data-theme="{{ user_theme }}" data-font-size="{{ user_font_size }}">
     {% include 'includes/_navbar.html' %}
 
     <!-- Toast Container -->
