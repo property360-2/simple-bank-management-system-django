@@ -85,38 +85,6 @@
                             {% endif %}
                         </div>
 
-                        <!-- Website -->
-                        <div class="col-12">
-                            <label for="{{ form.website.id_for_label }}" class="form-label">
-                                <i class="fas fa-globe me-2"></i>Website URL
-                            </label>
-                            {{ form.website }}
-                            {% if form.website.errors %}
-                            <div class="invalid-feedback d-block">{{ form.website.errors.0 }}</div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Support Email -->
-                        <div class="col-md-6">
-                            <label for="{{ form.support_email.id_for_label }}" class="form-label">
-                                <i class="fas fa-envelope me-2"></i>Support Email
-                            </label>
-                            {{ form.support_email }}
-                            {% if form.support_email.errors %}
-                            <div class="invalid-feedback d-block">{{ form.support_email.errors.0 }}</div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Support Phone -->
-                        <div class="col-md-6">
-                            <label for="{{ form.support_phone.id_for_label }}" class="form-label">
-                                <i class="fas fa-phone me-2"></i>Support Phone
-                            </label>
-                            {{ form.support_phone }}
-                            {% if form.support_phone.errors %}
-                            <div class="invalid-feedback d-block">{{ form.support_phone.errors.0 }}</div>
-                            {% endif %}
-                        </div>
 
                         <!-- Is Active -->
                         <div class="col-12">
@@ -158,19 +126,13 @@
                     </h5>
                     <div class="small text-muted">
                         <p><strong>Platform Type:</strong> Choose the type of investment platform (stocks, bonds, ETF, crypto, etc.)</p>
-                        <p><strong>Icon:</strong> FontAwesome icon name without "fa-" prefix</p>
+                        <p><strong>Icon:</strong> FontAwesome icon class (e.g., fa-chart-line, fa-coins)</p>
                         <p><strong>Color:</strong> Hex color code for visual identification</p>
-                        <p><strong>Support Info:</strong> Contact details for users who need assistance</p>
+                        <p><strong>Active Status:</strong> Only active platforms are available for users</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-document.getElementById('color-picker').addEventListener('change', function() {
-    document.getElementById('{{ form.color.id_for_label }}').value = this.value;
-});
-</script>
 {% endblock %}

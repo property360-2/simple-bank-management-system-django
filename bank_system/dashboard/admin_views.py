@@ -85,24 +85,28 @@ def admin_dashboard(request):
 @user_passes_test(admin_required)
 def fraud_detection_list(request):
     """List and manage fraud alerts"""
-    status_filter = request.GET.get('status', 'pending')
+    status_filter = request.GET.get('status')
     risk_filter = request.GET.get('risk')
 
-    frauds = FraudDetection.objects.all()
+    frauds = FraudDetection.objects.all().order_by('-detected_at')
 
     if status_filter:
         frauds = frauds.filter(status=status_filter)
     if risk_filter:
         frauds = frauds.filter(risk_level=risk_filter)
 
-    # Get statistics
+    # Get statistics by status and risk
     pending_count = FraudDetection.objects.filter(status='pending').count()
-    critical_count = FraudDetection.objects.filter(risk_level='critical', status='pending').count()
+    reviewing_count = FraudDetection.objects.filter(status='reviewed').count()
+    resolved_count = FraudDetection.objects.filter(Q(status='approved') | Q(status='rejected')).count()
+    high_risk_count = FraudDetection.objects.filter(risk_level='high').count()
 
     context = {
         'frauds': frauds,
         'pending_count': pending_count,
-        'critical_count': critical_count,
+        'reviewing_count': reviewing_count,
+        'resolved_count': resolved_count,
+        'high_risk_count': high_risk_count,
         'current_status': status_filter,
         'current_risk': risk_filter,
     }
@@ -115,26 +119,30 @@ def fraud_detection_detail(request, pk):
     """View and review fraud alert details"""
     fraud = get_object_or_404(FraudDetection, pk=pk)
 
-    if request.method == 'POST':
-        action = request.POST.get('action')
-        notes = request.POST.get('notes', '')
+    # Handle status changes via GET parameters for the template buttons
+    if request.method == 'GET':
+        action = request.GET.get('action')
+        if action in ['review', 'approve', 'reject']:
+            if action == 'review':
+                fraud.status = 'reviewed'
+                fraud.reviewed_by = request.user
+                fraud.reviewed_at = timezone.now()
+                fraud.save()
+                messages.success(request, 'Fraud case marked as reviewed')
+            elif action == 'approve':
+                fraud.status = 'approved'
+                fraud.reviewed_by = request.user
+                fraud.reviewed_at = timezone.now()
+                fraud.save()
+                messages.success(request, 'Fraud alert approved')
+            elif action == 'reject':
+                fraud.status = 'rejected'
+                fraud.reviewed_by = request.user
+                fraud.reviewed_at = timezone.now()
+                fraud.save()
+                messages.success(request, 'Fraud alert rejected')
 
-        if action == 'approve':
-            fraud.status = 'approved'
-            fraud.notes = notes
-            fraud.reviewed_by = request.user
-            fraud.reviewed_at = timezone.now()
-            fraud.save()
-            messages.success(request, 'Fraud alert approved')
-        elif action == 'reject':
-            fraud.status = 'rejected'
-            fraud.notes = notes
-            fraud.reviewed_by = request.user
-            fraud.reviewed_at = timezone.now()
-            fraud.save()
-            messages.success(request, 'Fraud alert rejected')
-
-        return redirect('admin:fraud_detection_list')
+            return redirect('admin:fraud_detection_detail', pk=fraud.pk)
 
     context = {
         'fraud': fraud,

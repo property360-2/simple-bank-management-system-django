@@ -92,36 +92,25 @@
                             {% endif %}
                         </div>
 
-                        <!-- Market Cap -->
-                        <div class="col-md-4">
-                            <label for="{{ form.market_cap.id_for_label }}" class="form-label">
-                                <i class="fas fa-chart-bar me-2"></i>Market Cap
+                        <!-- Minimum Investment -->
+                        <div class="col-md-6">
+                            <label for="{{ form.min_investment.id_for_label }}" class="form-label">
+                                <i class="fas fa-coins me-2"></i>Minimum Investment
                             </label>
-                            {{ form.market_cap }}
-                            {% if form.market_cap.errors %}
-                            <div class="invalid-feedback d-block">{{ form.market_cap.errors.0 }}</div>
+                            {{ form.min_investment }}
+                            {% if form.min_investment.errors %}
+                            <div class="invalid-feedback d-block">{{ form.min_investment.errors.0 }}</div>
                             {% endif %}
                         </div>
 
-                        <!-- Year High -->
-                        <div class="col-md-4">
-                            <label for="{{ form.year_high.id_for_label }}" class="form-label">
-                                <i class="fas fa-arrow-up me-2"></i>Year High
+                        <!-- Expected Return -->
+                        <div class="col-md-6">
+                            <label for="{{ form.expected_return.id_for_label }}" class="form-label">
+                                <i class="fas fa-chart-line me-2"></i>Expected Annual Return (%)
                             </label>
-                            {{ form.year_high }}
-                            {% if form.year_high.errors %}
-                            <div class="invalid-feedback d-block">{{ form.year_high.errors.0 }}</div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Year Low -->
-                        <div class="col-md-4">
-                            <label for="{{ form.year_low.id_for_label }}" class="form-label">
-                                <i class="fas fa-arrow-down me-2"></i>Year Low
-                            </label>
-                            {{ form.year_low }}
-                            {% if form.year_low.errors %}
-                            <div class="invalid-feedback d-block">{{ form.year_low.errors.0 }}</div>
+                            {{ form.expected_return }}
+                            {% if form.expected_return.errors %}
+                            <div class="invalid-feedback d-block">{{ form.expected_return.errors.0 }}</div>
                             {% endif %}
                         </div>
 
@@ -166,7 +155,9 @@
                     <div class="small text-muted">
                         <p><strong>Symbol:</strong> Unique identifier (e.g., AAPL, GOOG)</p>
                         <p><strong>Risk Level:</strong> Choose between Low, Medium, or High risk</p>
-                        <p><strong>Market Data:</strong> Current price and year high/low are used for portfolio calculations</p>
+                        <p><strong>Current Price:</strong> The current market price of the product</p>
+                        <p><strong>Minimum Investment:</strong> Minimum amount required to invest</p>
+                        <p><strong>Expected Return:</strong> Annual percentage return expectation</p>
                         <p><strong>Active Status:</strong> Only active products appear in user portfolios</p>
                     </div>
                 </div>
