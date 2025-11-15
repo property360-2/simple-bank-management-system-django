@@ -3,7 +3,7 @@ Context processors for settings app
 Provides currency and personalization data to templates
 """
 
-from core.currency import CurrencyFormatter, get_currency_symbol, CURRENCY_CHOICES
+from core.currency import CurrencyFormatter, get_currency_symbol, CURRENCY_CHOICES as AVAILABLE_CURRENCIES
 
 
 def currency_context(request):
@@ -16,7 +16,7 @@ def currency_context(request):
     """
     context = {
         'currency_formatter': CurrencyFormatter,
-        'currency_choices': CURRENCY_CHOICES,
+        'currency_choices': AVAILABLE_CURRENCIES,
     }
 
     if request.user.is_authenticated:
