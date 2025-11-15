@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load currency_tags %}
 
 {% block title %}Transfer{% endblock %}
 
@@ -12,7 +13,7 @@
             <div class="card-body">
                 <div class="alert alert-info">
                     <strong>From Account:</strong> {{ account.account_number }}<br>
-                    <strong>Current Balance:</strong> ${{ account.balance }}
+                    <strong>Current Balance:</strong> {% format_amount account.balance user=request.user %}
                 </div>
                 <form method="post">
                     {% csrf_token %}

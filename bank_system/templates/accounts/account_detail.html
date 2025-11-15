@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load currency_tags %}
 
 {% block title %}Account Details{% endblock %}
 
@@ -23,7 +24,7 @@
                         </p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>Balance:</strong> <span class="text-success fs-3">${{ account.balance }}</span></p>
+                        <p><strong>Balance:</strong> <span class="text-success fs-3">{% format_amount account.balance user=request.user %}</span></p>
                         <p><strong>Created:</strong> {{ account.created_at|date:"M d, Y H:i" }}</p>
                         <p><strong>Last Updated:</strong> {{ account.updated_at|date:"M d, Y H:i" }}</p>
                     </div>
@@ -72,9 +73,9 @@
                                 </td>
                                 <td>
                                     {% if transaction.to_account == account %}
-                                        <span class="text-success">+${{ transaction.amount }}</span>
+                                        <span class="text-success">+{% format_amount transaction.amount user=request.user %}</span>
                                     {% else %}
-                                        <span class="text-danger">-${{ transaction.amount }}</span>
+                                        <span class="text-danger">-{% format_amount transaction.amount user=request.user %}</span>
                                     {% endif %}
                                 </td>
                                 <td>{{ transaction.description|default:"N/A" }}</td>
@@ -96,9 +97,9 @@
                 <h5 class="mb-0"><i class="fas fa-chart-line"></i> Quick Stats</h5>
             </div>
             <div class="card-body">
-                <p><strong>Total Deposits:</strong> {{ total_deposits }}</p>
-                <p><strong>Total Withdrawals:</strong> {{ total_withdrawals }}</p>
-                <p><strong>Total Transfers:</strong> {{ total_transfers }}</p>
+                <p><strong>Total Deposits:</strong> {% format_amount total_deposits user=request.user %}</p>
+                <p><strong>Total Withdrawals:</strong> {% format_amount total_withdrawals user=request.user %}</p>
+                <p><strong>Total Transfers:</strong> {% format_amount total_transfers user=request.user %}</p>
             </div>
         </div>
     </div>
