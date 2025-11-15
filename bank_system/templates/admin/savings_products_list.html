@@ -59,13 +59,9 @@
                         <td>
                             <code>{{ product.get_compounding_frequency_display }}</code>
                         </td>
-                        <td>${{ product.minimum_balance|floatformat:2 }}</td>
+                        <td>${{ product.min_balance|floatformat:2 }}</td>
                         <td>
-                            {% if product.withdrawal_limit %}
                             {{ product.withdrawal_limit }} / month
-                            {% else %}
-                            <span class="text-muted">Unlimited</span>
-                            {% endif %}
                         </td>
                         <td>
                             {% if product.is_active %}

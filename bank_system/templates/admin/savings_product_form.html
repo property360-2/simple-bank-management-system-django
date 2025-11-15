@@ -72,35 +72,35 @@
 
                         <!-- Minimum Balance -->
                         <div class="col-md-6">
-                            <label for="{{ form.minimum_balance.id_for_label }}" class="form-label">
+                            <label for="{{ form.min_balance.id_for_label }}" class="form-label">
                                 <i class="fas fa-dollar-sign me-2"></i>Minimum Balance *
                             </label>
-                            {{ form.minimum_balance }}
-                            {% if form.minimum_balance.errors %}
-                            <div class="invalid-feedback d-block">{{ form.minimum_balance.errors.0 }}</div>
+                            {{ form.min_balance }}
+                            {% if form.min_balance.errors %}
+                            <div class="invalid-feedback d-block">{{ form.min_balance.errors.0 }}</div>
                             {% endif %}
                         </div>
 
                         <!-- Withdrawal Limit -->
                         <div class="col-md-6">
                             <label for="{{ form.withdrawal_limit.id_for_label }}" class="form-label">
-                                <i class="fas fa-hand-holding-usd me-2"></i>Withdrawal Limit (per month)
+                                <i class="fas fa-hand-holding-usd me-2"></i>Withdrawal Limit (per month) *
                             </label>
                             {{ form.withdrawal_limit }}
                             {% if form.withdrawal_limit.errors %}
                             <div class="invalid-feedback d-block">{{ form.withdrawal_limit.errors.0 }}</div>
                             {% endif %}
-                            <small class="d-block mt-2 text-muted">Leave blank for unlimited withdrawals</small>
+                            <small class="d-block mt-2 text-muted">Number of withdrawals allowed per month</small>
                         </div>
 
-                        <!-- Penalty Fee -->
+                        <!-- Penalty Rate -->
                         <div class="col-md-6">
-                            <label for="{{ form.penalty_fee.id_for_label }}" class="form-label">
-                                <i class="fas fa-exclamation-circle me-2"></i>Early Withdrawal Penalty
+                            <label for="{{ form.penalty_rate.id_for_label }}" class="form-label">
+                                <i class="fas fa-exclamation-circle me-2"></i>Early Withdrawal Penalty (%)
                             </label>
-                            {{ form.penalty_fee }}
-                            {% if form.penalty_fee.errors %}
-                            <div class="invalid-feedback d-block">{{ form.penalty_fee.errors.0 }}</div>
+                            {{ form.penalty_rate }}
+                            {% if form.penalty_rate.errors %}
+                            <div class="invalid-feedback d-block">{{ form.penalty_rate.errors.0 }}</div>
                             {% endif %}
                         </div>
 
@@ -143,11 +143,11 @@
                         <i class="fas fa-info-circle me-2"></i>Form Help
                     </h5>
                     <div class="small text-muted">
-                        <p><strong>Interest Rate:</strong> Annual percentage yield</p>
+                        <p><strong>Interest Rate:</strong> Annual percentage yield (%)</p>
                         <p><strong>Compounding:</strong> How frequently interest is calculated and added</p>
                         <p><strong>Minimum Balance:</strong> Lowest balance to maintain account</p>
-                        <p><strong>Withdrawal Limit:</strong> Maximum withdrawals allowed per month</p>
-                        <p><strong>Penalty Fee:</strong> Fee charged for early withdrawal or maintaining below minimum</p>
+                        <p><strong>Withdrawal Limit:</strong> Number of withdrawals allowed per month</p>
+                        <p><strong>Penalty Rate:</strong> Percentage charged for early withdrawal</p>
                     </div>
                 </div>
             </div>

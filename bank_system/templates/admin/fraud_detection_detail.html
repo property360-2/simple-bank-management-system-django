@@ -7,7 +7,7 @@
     <div class="d-flex justify-content-between align-items-center">
         <div>
             <h1>
-                <i class="fas fa-{% if fraud.status == 'pending' %}hourglass-half{% elif fraud.status == 'reviewing' %}eye{% elif fraud.status == 'confirmed' %}exclamation-triangle{% else %}check-circle{% endif %} me-2"></i>
+                <i class="fas fa-{% if fraud.status == 'pending' %}hourglass-half{% elif fraud.status == 'reviewed' %}eye{% elif fraud.status == 'approved' %}check-circle{% else %}times-circle{% endif %} me-2"></i>
                 Fraud Case #{{ fraud.id }}
             </h1>
             <p>Review and manage suspicious transaction</p>
@@ -49,14 +49,14 @@
                             <h4 class="mb-1">Risk Assessment</h4>
                             <p class="text-muted mb-2">{{ fraud.get_risk_level_display }} Risk</p>
                             <div>
-                                <span class="badge bg-{% if fraud.status == 'pending' %}warning{% elif fraud.status == 'reviewing' %}info{% elif fraud.status == 'confirmed' %}danger{% else %}success{% endif %}">
+                                <span class="badge bg-{% if fraud.status == 'pending' %}warning{% elif fraud.status == 'reviewed' %}info{% elif fraud.status == 'approved' %}success{% else %}danger{% endif %}">
                                     {{ fraud.get_status_display }}
                                 </span>
                             </div>
                         </div>
                         <div class="col-auto text-end">
-                            <small class="text-muted d-block">Created</small>
-                            <strong>{{ fraud.created_at|date:"M d, Y H:i" }}</strong>
+                            <small class="text-muted d-block">Detected</small>
+                            <strong>{{ fraud.detected_at|date:"M d, Y H:i" }}</strong>
                             {% if fraud.reviewed_at %}
                             <small class="text-muted d-block mt-2">Reviewed</small>
                             <strong>{{ fraud.reviewed_at|date:"M d, Y H:i" }}</strong>
@@ -219,21 +219,21 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        {% if fraud.status != 'reviewing' %}
+                        {% if fraud.status != 'reviewed' %}
                         <a href="?action=review" class="btn btn-info">
-                            <i class="fas fa-eye me-2"></i>Mark as Reviewing
+                            <i class="fas fa-eye me-2"></i>Mark as Reviewed
                         </a>
                         {% endif %}
 
-                        {% if fraud.status != 'confirmed' %}
-                        <a href="?action=confirm" class="btn btn-danger">
-                            <i class="fas fa-check me-2"></i>Confirm Fraud
+                        {% if fraud.status != 'approved' %}
+                        <a href="?action=approve" class="btn btn-success">
+                            <i class="fas fa-check me-2"></i>Approve Case
                         </a>
                         {% endif %}
 
-                        {% if fraud.status != 'resolved' %}
-                        <a href="?action=resolve" class="btn btn-success">
-                            <i class="fas fa-check-circle me-2"></i>Mark as Resolved
+                        {% if fraud.status != 'rejected' %}
+                        <a href="?action=reject" class="btn btn-danger">
+                            <i class="fas fa-times me-2"></i>Reject Case
                         </a>
                         {% endif %}
                     </div>
