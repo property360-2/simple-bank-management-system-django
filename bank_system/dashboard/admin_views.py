@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Sum, Count, Q, Avg
 from django.utils import timezone
+from django.views.decorators.cache import cache_page
+from django.views.decorators.http import condition
+from django.core.cache import cache
 from datetime import timedelta
 from django.core.serializers.json import DjangoJSONEncoder
 import json
@@ -15,7 +18,13 @@ from users.decorators import manager_required
 
 
 def get_transaction_chart_data():
-    """Get transaction volume data for the last 90 days"""
+    """Get transaction volume data for the last 90 days with caching"""
+    cache_key = 'admin_transaction_chart_data'
+    data = cache.get(cache_key)
+
+    if data is not None:
+        return data
+
     try:
         data = {}
         for i in range(90):
@@ -25,24 +34,41 @@ def get_transaction_chart_data():
                 created_at__date=date.date()
             ).count()
             data[date_key] = count
+
+        # Cache for 5 minutes
+        cache.set(cache_key, data, 300)
         return data
     except:
         return {}
 
 
 def get_account_type_distribution():
-    """Get distribution of account types"""
+    """Get distribution of account types with caching"""
+    cache_key = 'admin_account_type_data'
+    data = cache.get(cache_key)
+
+    if data is not None:
+        return data
+
     try:
         distribution = Account.objects.values('account_type').annotate(
             count=Count('id')
         ).order_by('account_type')
-        return {item['account_type']: item['count'] for item in distribution}
+        data = {item['account_type']: item['count'] for item in distribution}
+        cache.set(cache_key, data, 300)
+        return data
     except:
         return {}
 
 
 def get_user_registration_trend():
-    """Get new users registered in the last 90 days"""
+    """Get new users registered in the last 90 days with caching"""
+    cache_key = 'admin_user_registration_data'
+    data = cache.get(cache_key)
+
+    if data is not None:
+        return data
+
     try:
         data = {}
         for i in range(90):
@@ -52,29 +78,47 @@ def get_user_registration_trend():
                 date_joined__date=date.date()
             ).count()
             data[date_key] = count
+
+        cache.set(cache_key, data, 300)
         return data
     except:
         return {}
 
 
 def get_transaction_type_distribution():
-    """Get distribution of transaction types"""
+    """Get distribution of transaction types with caching"""
+    cache_key = 'admin_transaction_type_data'
+    data = cache.get(cache_key)
+
+    if data is not None:
+        return data
+
     try:
         distribution = Transaction.objects.values('transaction_type').annotate(
             count=Count('id')
         ).order_by('transaction_type')
-        return {item['transaction_type']: item['count'] for item in distribution}
+        data = {item['transaction_type']: item['count'] for item in distribution}
+        cache.set(cache_key, data, 300)
+        return data
     except:
         return {}
 
 
 def get_fraud_distribution():
-    """Get distribution of fraud by risk level"""
+    """Get distribution of fraud by risk level with caching"""
+    cache_key = 'admin_fraud_data'
+    data = cache.get(cache_key)
+
+    if data is not None:
+        return data
+
     try:
         distribution = FraudDetection.objects.values('risk_level').annotate(
             count=Count('id')
         ).order_by('risk_level')
-        return {item['risk_level']: item['count'] for item in distribution}
+        data = {item['risk_level']: item['count'] for item in distribution}
+        cache.set(cache_key, data, 300)
+        return data
     except:
         return {}
 
