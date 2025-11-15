@@ -1,4 +1,5 @@
 {% extends 'admin/base.html' %}
+{% load static %}
 
 {% block title %}Investment Products{% endblock %}
 
@@ -19,10 +20,10 @@
     <!-- Filters -->
     <div class="card mb-4">
         <div class="card-body">
-            <form method="get" class="row g-3">
+            <form id="investmentFilterForm" class="row g-3">
                 <div class="col-md-6">
-                    <label for="platform" class="form-label">Filter by Platform</label>
-                    <select class="form-select form-select-dark" name="platform" id="platform">
+                    <label for="platformFilter" class="form-label">Filter by Platform</label>
+                    <select class="form-select form-select-dark" name="platform" id="platformFilter">
                         <option value="">All Platforms</option>
                         {% for platform in platforms %}
                         <option value="{{ platform.id }}" {% if current_platform == platform.id|stringformat:'s' %}selected{% endif %}>
@@ -32,12 +33,12 @@
                     </select>
                 </div>
                 <div class="col-md-6 d-flex align-items-end gap-2">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" id="investmentFilterSubmit" class="btn btn-primary">
                         <i class="fas fa-search me-2"></i>Filter
                     </button>
-                    <a href="{% url 'admin_panel:investment_products_list' %}" class="btn btn-outline-secondary">
+                    <button type="button" id="investmentFilterReset" class="btn btn-outline-secondary">
                         <i class="fas fa-redo me-2"></i>Reset
-                    </a>
+                    </button>
                 </div>
             </form>
         </div>
@@ -45,64 +46,11 @@
 
     <!-- Products Table -->
     <div class="card">
-        <div class="table-responsive">
-            <table class="table table-dark mb-0">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Symbol</th>
-                        <th>Platform</th>
-                        <th>Current Price</th>
-                        <th>Risk Level</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for product in products %}
-                    <tr>
-                        <td>
-                            <strong>{{ product.name }}</strong>
-                            <br>
-                            <small class="text-muted">{{ product.description|truncatewords:5 }}</small>
-                        </td>
-                        <td><code>{{ product.symbol }}</code></td>
-                        <td>{{ product.platform.name }}</td>
-                        <td><strong>${{ product.current_price|floatformat:2 }}</strong></td>
-                        <td>
-                            <span class="badge badge-{% if product.risk_level == 'low' %}success{% elif product.risk_level == 'medium' %}warning{% else %}danger{% endif %}">
-                                {{ product.get_risk_level_display }}
-                            </span>
-                        </td>
-                        <td>
-                            {% if product.is_active %}
-                            <span class="badge badge-success">Active</span>
-                            {% else %}
-                            <span class="badge bg-secondary">Inactive</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <a href="{% url 'admin_panel:investment_product_edit' product.pk %}" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="{% url 'admin_panel:investment_product_delete' product.pk %}" class="btn btn-sm btn-outline-danger">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="text-center py-4">
-                            <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
-                            <p class="text-muted">No investment products found</p>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div id="investmentTableContainer">
+            {% include 'admin/investment_products_table.html' %}
         </div>
     </div>
 </div>
+
+<script src="{% static 'js/admin_filters.js' %}"></script>
 {% endblock %}

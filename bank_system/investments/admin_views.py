@@ -10,6 +10,7 @@ def investment_products_list(request):
     """List all investment products"""
     products = InvestmentProduct.objects.all()
     platforms = InvestmentPlatform.objects.all()
+    is_ajax = request.GET.get('ajax') == 'true'
 
     platform_filter = request.GET.get('platform')
     if platform_filter:
@@ -20,6 +21,11 @@ def investment_products_list(request):
         'platforms': platforms,
         'current_platform': platform_filter,
     }
+
+    # Return partial template for AJAX requests (just the table)
+    if is_ajax:
+        return render(request, 'admin/investment_products_table.html', context)
+
     return render(request, 'admin/investment_products_list.html', context)
 
 
