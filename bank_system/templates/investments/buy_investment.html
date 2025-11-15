@@ -111,14 +111,43 @@
                                                         <strong class="h5">{% format_amount product.current_price user=request.user %}</strong>
                                                     </div>
 
-                                                    <div class="mb-3">
+                                                    <!-- Buy Mode Toggle -->
+                                                    <div class="mb-4">
+                                                        <label class="form-label"><strong>How would you like to buy?</strong></label>
+                                                        <div class="btn-group w-100" role="group">
+                                                            <input type="radio" class="btn-check" name="buy_mode{{ product.id }}" id="buy_by_quantity{{ product.id }}" value="quantity" checked onchange="switchBuyMode{{ product.id }}()">
+                                                            <label class="btn btn-outline-primary" for="buy_by_quantity{{ product.id }}">
+                                                                <i class="fas fa-chart-bar"></i> By Quantity
+                                                            </label>
+
+                                                            <input type="radio" class="btn-check" name="buy_mode{{ product.id }}" id="buy_by_amount{{ product.id }}" value="amount" onchange="switchBuyMode{{ product.id }}()">
+                                                            <label class="btn btn-outline-primary" for="buy_by_amount{{ product.id }}">
+                                                                <i class="fas fa-dollar-sign"></i> By Amount
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Buy by Quantity -->
+                                                    <div id="buyByQuantity{{ product.id }}" class="mb-3">
                                                         <label for="quantity{{ product.id }}" class="form-label">
-                                                            <strong>Number of Shares/Units to Buy</strong>
+                                                            <strong>Number of Shares/Units</strong>
                                                         </label>
                                                         <input type="number" class="form-control form-control-lg" name="quantity" id="quantity{{ product.id }}"
-                                                               placeholder="Enter number of shares (e.g., 10, 0.5, 2.25)" min="0.01" step="0.01" required onchange="updateBuyCost{{ product.id }}()" oninput="updateBuyCost{{ product.id }}()">
+                                                               placeholder="Enter number of shares (e.g., 10, 0.5, 2.25)" min="0.01" step="0.01" onchange="updateBuyCost{{ product.id }}()" oninput="updateBuyCost{{ product.id }}()">
                                                         <small class="form-text text-muted d-block mt-2">
                                                             <i class="fas fa-info-circle"></i> You can purchase fractional amounts (e.g., 0.5 shares, 2.25 shares)
+                                                        </small>
+                                                    </div>
+
+                                                    <!-- Buy by Amount -->
+                                                    <div id="buyByAmount{{ product.id }}" class="mb-3" style="display: none;">
+                                                        <label for="amount{{ product.id }}" class="form-label">
+                                                            <strong>Amount to Invest</strong>
+                                                        </label>
+                                                        <input type="number" class="form-control form-control-lg" name="amount" id="amount{{ product.id }}"
+                                                               placeholder="Enter amount (e.g., 100, 500, 1000)" min="0.01" step="0.01" onchange="updateBuyCostByAmount{{ product.id }}()" oninput="updateBuyCostByAmount{{ product.id }}()">
+                                                        <small class="form-text text-muted d-block mt-2">
+                                                            <i class="fas fa-info-circle"></i> Enter the amount you want to invest, we'll calculate the quantity
                                                         </small>
                                                     </div>
 
@@ -171,6 +200,28 @@
 
 <script>
 {% for product in products %}
+function switchBuyMode{{ product.id }}() {
+    const quantityDiv = document.getElementById('buyByQuantity{{ product.id }}');
+    const amountDiv = document.getElementById('buyByAmount{{ product.id }}');
+    const modeRadio = document.querySelector('input[name="buy_mode{{ product.id }}"]:checked').value;
+
+    if (modeRadio === 'quantity') {
+        quantityDiv.style.display = 'block';
+        amountDiv.style.display = 'none';
+        document.getElementById('quantity{{ product.id }}').removeAttribute('required');
+        document.getElementById('amount{{ product.id }}').removeAttribute('required');
+        document.getElementById('quantity{{ product.id }}').setAttribute('required', 'required');
+        updateBuyCost{{ product.id }}();
+    } else {
+        quantityDiv.style.display = 'none';
+        amountDiv.style.display = 'block';
+        document.getElementById('quantity{{ product.id }}').removeAttribute('required');
+        document.getElementById('amount{{ product.id }}').removeAttribute('required');
+        document.getElementById('amount{{ product.id }}').setAttribute('required', 'required');
+        updateBuyCostByAmount{{ product.id }}();
+    }
+}
+
 function updateBuyCost{{ product.id }}() {
     const quantityInput = document.getElementById('quantity{{ product.id }}');
     const quantity = parseFloat(quantityInput.value) || 0;
@@ -185,9 +236,48 @@ function updateBuyCost{{ product.id }}() {
     }
 }
 
-// Initialize on page load
+function updateBuyCostByAmount{{ product.id }}() {
+    const amountInput = document.getElementById('amount{{ product.id }}');
+    const amount = parseFloat(amountInput.value) || 0;
+    const currentPrice = {{ product.current_price }};
+
+    if (amount > 0) {
+        document.getElementById('buyCostCalculation{{ product.id }}').style.display = 'block';
+        const quantity = amount / currentPrice;
+        document.getElementById('totalBuyCost{{ product.id }}').textContent = '$' + amount.toFixed(2);
+        // Update the hidden quantity field so it gets submitted with the form
+        document.getElementById('quantity{{ product.id }}').value = quantity.toFixed(4);
+    } else {
+        document.getElementById('buyCostCalculation{{ product.id }}').style.display = 'none';
+    }
+}
+
+// Form submission - ensure quantity is set based on mode
 document.addEventListener('DOMContentLoaded', function() {
-    updateBuyCost{{ product.id }}();
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const buyByQuantityDiv = this.querySelector('[id^="buyByQuantity"]');
+            const buyByAmountDiv = this.querySelector('[id^="buyByAmount"]');
+
+            // Get the mode from the form
+            const modeRadios = this.querySelectorAll('[name^="buy_mode"]');
+            let activeMode = 'quantity';
+            modeRadios.forEach(radio => {
+                if (radio.checked) {
+                    activeMode = radio.value;
+                }
+            });
+
+            // If buying by amount, the quantity should already be calculated
+            // If buying by quantity, it's ready to go
+        });
+    });
+
+    // Initialize first product if it exists
+    {% if products %}
+        updateBuyCost{{ product.id }}();
+    {% endif %}
 });
 {% endfor %}
 </script>
