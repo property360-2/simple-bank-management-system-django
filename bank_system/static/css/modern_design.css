@@ -98,13 +98,25 @@ html {
 }
 
 .dropdown-item {
-    color: var(--text-secondary) !important;
-    transition: all var(--transition-fast);
+    color: var(--text-primary);
 }
 
-.dropdown-item:hover {
-    background-color: var(--bg-secondary) !important;
-    color: var(--primary) !important;
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: var(--bg-primary);
+    color: var(--primary);
+}
+
+.dropdown-divider {
+    border-color: var(--border-primary);
+}
+
+.navbar-toggler {
+    border: 1px solid var(--border-primary);
+}
+
+.navbar-toggler-light .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(230, 237, 243, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
 /* ============================================================================
@@ -1018,6 +1030,25 @@ footer {
 
 .table {
     color: var(--text-primary);
+    background-color: var(--bg-secondary);
+}
+
+.table th {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--border-primary);
+    font-weight: 600;
+}
+
+.table td {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-primary);
+    vertical-align: middle;
+}
+
+.table tbody tr {
+    border-color: var(--border-primary);
 }
 
 .table-bordered {
@@ -1031,10 +1062,29 @@ footer {
 
 .table-hover tbody tr:hover {
     background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.table-striped tbody tr {
+    background-color: var(--bg-secondary);
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
     background-color: rgba(88, 166, 255, 0.05);
+}
+
+.table-dark {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.table-dark th {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.table-dark td {
+    color: var(--text-primary);
 }
 
 /* ============================================================================
@@ -1086,6 +1136,73 @@ footer {
 
 .border {
     border-color: var(--border-primary) !important;
+}
+
+/* ============================================================================
+   MODALS
+   ============================================================================ */
+
+.modal-content {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    color: var(--text-primary);
+}
+
+.modal-header {
+    background-color: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-primary);
+    color: var(--text-primary);
+}
+
+.modal-title {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.modal-body {
+    color: var(--text-primary);
+    background-color: var(--bg-secondary);
+}
+
+.modal-footer {
+    background-color: var(--bg-tertiary);
+    border-top: 1px solid var(--border-primary);
+}
+
+.btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.btn-close:hover {
+    filter: invert(1) grayscale(100%) brightness(180%);
+}
+
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* ============================================================================
+   DIALOGS & POPOVERS
+   ============================================================================ */
+
+.popover {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+}
+
+.popover-header {
+    background-color: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-primary);
+    color: var(--text-primary);
+}
+
+.popover-body {
+    color: var(--text-primary);
+}
+
+.tooltip-inner {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
 }
 
 /* ============================================================================
