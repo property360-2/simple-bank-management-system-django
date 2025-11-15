@@ -162,6 +162,35 @@ html[data-admin="true"] .table-dark strong {
     color: #ffffff;
 }
 
+html[data-admin="true"] .table-dark td strong {
+    color: #ffffff !important;
+}
+
+html[data-admin="true"] .table-dark td small {
+    color: #a8b2ff !important;
+}
+
+html[data-admin="true"] .table-dark .text-light {
+    color: #f8f9fa !important;
+}
+
+html[data-admin="true"] .table-dark .text-light strong {
+    color: #ffffff !important;
+}
+
+html[data-admin="true"] .table-dark .text-light small {
+    color: #a8b2ff !important;
+}
+
+html[data-admin="true"] .table-dark td {
+    background: #212529;
+    color: #f8f9fa;
+}
+
+html[data-admin="true"] .table-dark tbody td {
+    vertical-align: middle;
+}
+
 /* Stats Cards */
 html[data-admin="true"] .stat-card {
     background: var(--dark-surface);
