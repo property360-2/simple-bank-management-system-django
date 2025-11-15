@@ -110,17 +110,34 @@
                                                     </div>
 
                                                     <div class="mb-3">
-                                                        <label for="quantity{{ product.id }}" class="form-label">Quantity</label>
-                                                        <input type="number" class="form-control" name="quantity" id="quantity{{ product.id }}"
-                                                               placeholder="Enter quantity (supports fractional amounts)" min="0.01" step="0.01" required>
+                                                        <label for="quantity{{ product.id }}" class="form-label">
+                                                            <strong>Number of Shares/Units to Buy</strong>
+                                                        </label>
+                                                        <input type="number" class="form-control form-control-lg" name="quantity" id="quantity{{ product.id }}"
+                                                               placeholder="Enter number of shares (e.g., 10, 0.5, 2.25)" min="0.01" step="0.01" required onchange="updateBuyCost{{ product.id }}()" oninput="updateBuyCost{{ product.id }}()">
                                                         <small class="form-text text-muted d-block mt-2">
-                                                            <i class="fas fa-info-circle"></i> You can purchase fractional amounts of any asset
+                                                            <i class="fas fa-info-circle"></i> You can purchase fractional amounts (e.g., 0.5 shares, 2.25 shares)
                                                         </small>
                                                     </div>
 
-                                                    <div class="alert alert-info">
+                                                    <div id="buyCostCalculation{{ product.id }}" style="display: none;">
+                                                        <div class="alert alert-info">
+                                                            <div class="row g-2">
+                                                                <div class="col-6">
+                                                                    <small class="d-block">Price per Unit</small>
+                                                                    <strong>{% format_amount product.current_price user=request.user %}</strong>
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <small class="d-block">Total Cost</small>
+                                                                    <strong id="totalBuyCost{{ product.id }}">{% user_currency_symbol %} 0.00</strong>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="alert alert-warning">
                                                         <small>
-                                                            <i class="fas fa-info-circle"></i>
+                                                            <i class="fas fa-wallet"></i>
                                                             Account balance: <strong>{% format_amount portfolio.account.balance user=request.user %}</strong>
                                                         </small>
                                                     </div>
@@ -149,4 +166,27 @@
         </div>
     </div>
 </div>
+
+<script>
+{% for product in products %}
+function updateBuyCost{{ product.id }}() {
+    const quantityInput = document.getElementById('quantity{{ product.id }}');
+    const quantity = parseFloat(quantityInput.value) || 0;
+    const currentPrice = {{ product.current_price }};
+
+    if (quantity > 0) {
+        document.getElementById('buyCostCalculation{{ product.id }}').style.display = 'block';
+        const totalCost = quantity * currentPrice;
+        document.getElementById('totalBuyCost{{ product.id }}').textContent = '$' + totalCost.toFixed(2);
+    } else {
+        document.getElementById('buyCostCalculation{{ product.id }}').style.display = 'none';
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateBuyCost{{ product.id }}();
+});
+{% endfor %}
+</script>
 {% endblock %}
