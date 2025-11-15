@@ -19,11 +19,14 @@ def currency(value, currency_code='USD'):
     """
     Format a number as currency with the specified code
     Usage: {{ amount|currency:"PHP" }}
+    Handles None values gracefully
     """
     try:
+        if value is None or value == '':
+            return '-'
         return mark_safe(format_currency(value, currency_code))
     except Exception:
-        return value
+        return '-'
 
 
 @register.filter
@@ -31,12 +34,15 @@ def convert_curr(value, currencies):
     """
     Convert currency and format
     Usage: {{ amount|convert_curr:"USD,PHP" }}
+    Handles None values gracefully
     """
     try:
+        if value is None or value == '':
+            return '-'
         from_curr, to_curr = currencies.split(',')
         return mark_safe(convert_and_format_currency(value, from_curr.strip(), to_curr.strip()))
     except Exception:
-        return value
+        return '-'
 
 
 @register.filter
@@ -53,8 +59,13 @@ def format_amount(amount, user=None, base_currency='USD'):
     """
     Format an amount in user's preferred currency
     Usage: {% format_amount amount user=request.user %}
+    Handles None values gracefully
     """
     try:
+        # Handle None values
+        if amount is None or amount == '':
+            return '-'
+
         if user and hasattr(user, 'preferences'):
             preferred_currency = user.preferences.currency
         else:
@@ -62,7 +73,11 @@ def format_amount(amount, user=None, base_currency='USD'):
 
         return mark_safe(convert_and_format_currency(amount, base_currency, preferred_currency))
     except Exception:
-        return format_currency(amount, base_currency)
+        # Return formatted amount with base currency if conversion fails
+        try:
+            return format_currency(amount, base_currency)
+        except Exception:
+            return '-'
 
 
 @register.simple_tag
