@@ -30,23 +30,23 @@
                     <!-- Dashboard -->
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'admin_panel:dashboard' %}">
-                            <i class="fas fa-chart-line me-2"></i>Dashboard
+                            <i class="fas fa-home me-2"></i>Dashboard
                         </a>
                     </li>
 
                     <!-- Business Intelligence -->
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'business_intelligence' %}active{% endif %}" href="{% url 'admin_panel:business_intelligence' %}">
-                            <i class="fas fa-brain me-2"></i>BI
+                            <i class="fas fa-chart-bar me-2"></i>Analytics
                         </a>
                     </li>
 
                     <!-- Product Management Dropdown -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-cube me-2"></i>Products
+                            <i class="fas fa-package me-2"></i>Products
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-dark">
+                        <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'admin_panel:investment_products_list' %}">
                                 <i class="fas fa-chart-pie me-2"></i>Investment Products
                             </a></li>
