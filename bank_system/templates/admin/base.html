@@ -62,6 +62,11 @@
                         <i class="fas fa-chart-line me-2"></i> Dashboard
                     </a>
                 </div>
+                <div class="admin-sidebar-item {% if request.resolver_match.url_name == 'business_intelligence' %}active{% endif %}">
+                    <a href="{% url 'admin_panel:business_intelligence' %}" class="text-decoration-none d-flex align-items-center">
+                        <i class="fas fa-brain me-2"></i> Business Intelligence
+                    </a>
+                </div>
 
                 <h6 class="text-secondary text-uppercase mt-4 mb-2" style="font-size: 0.75rem; letter-spacing: 1px;">Product Management</h6>
                 <div class="admin-sidebar-item {% if 'investment' in request.path %}active{% endif %}">

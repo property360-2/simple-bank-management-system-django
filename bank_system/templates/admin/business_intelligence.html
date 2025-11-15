@@ -1,0 +1,341 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Business Intelligence{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1><i class="fas fa-brain me-2"></i>Business Intelligence & Forecasting</h1>
+    <p>Advanced analytics with SARIMA time series forecasting and descriptive statistics</p>
+</div>
+
+<div class="container-fluid px-4 pb-4">
+    <!-- Transaction Volume Forecast -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Transaction Volume Forecast (SARIMA Model - Next 30 Days)
+                    </h5>
+                    <small class="text-muted d-block mt-2">Historical data (blue) + Forecast (orange)</small>
+                </div>
+                <div class="card-body">
+                    <canvas id="forecastChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Descriptive Analytics -->
+    <h4 class="mb-3 mt-5"><i class="fas fa-calculator me-2"></i>Descriptive Analytics</h4>
+    <div class="row g-4 mb-4">
+        <!-- Transaction Statistics -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exchange-alt me-2"></i>Transaction Statistics
+                    </h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <tbody>
+                            {% if transaction_analytics %}
+                                <tr>
+                                    <td><strong>Total Transactions</strong></td>
+                                    <td>{{ transaction_analytics.count }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mean Amount</strong></td>
+                                    <td>${{ transaction_analytics.mean|floatformat:2 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Median Amount</strong></td>
+                                    <td>${{ transaction_analytics.median|floatformat:2 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Standard Deviation</strong></td>
+                                    <td>${{ transaction_analytics.std_dev|floatformat:2 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Minimum Amount</strong></td>
+                                    <td>${{ transaction_analytics.min|floatformat:2 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Maximum Amount</strong></td>
+                                    <td>${{ transaction_analytics.max|floatformat:2 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>25th Percentile</strong></td>
+                                    <td>${{ transaction_analytics.q25|floatformat:2 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>75th Percentile</strong></td>
+                                    <td>${{ transaction_analytics.q75|floatformat:2 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Skewness</strong></td>
+                                    <td>{{ transaction_analytics.skewness|floatformat:3 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Kurtosis</strong></td>
+                                    <td>{{ transaction_analytics.kurtosis|floatformat:3 }}</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">No transaction data available</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Balance Statistics -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-wallet me-2"></i>Account Balance Statistics
+                    </h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <tbody>
+                            {% if account_analytics %}
+                                <tr>
+                                    <td><strong>Total Balance</strong></td>
+                                    <td>${{ account_analytics.total_balance|floatformat:0 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Average Balance</strong></td>
+                                    <td>${{ account_analytics.average_balance|floatformat:2 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Median Balance</strong></td>
+                                    <td>${{ account_analytics.median_balance|floatformat:2 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Standard Deviation</strong></td>
+                                    <td>${{ account_analytics.std_dev|floatformat:2 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Minimum Balance</strong></td>
+                                    <td>${{ account_analytics.min_balance|floatformat:2 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Maximum Balance</strong></td>
+                                    <td>${{ account_analytics.max_balance|floatformat:2 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>25th Percentile</strong></td>
+                                    <td>${{ account_analytics.percentile_25|floatformat:2 }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>75th Percentile</strong></td>
+                                    <td>${{ account_analytics.percentile_75|floatformat:2 }}</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">No account data available</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Activity Analytics -->
+    <div class="row mb-4">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-users me-2"></i>User Activity Analytics
+                    </h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <tbody>
+                            {% if user_analytics %}
+                                <tr>
+                                    <td><strong>Total Users</strong></td>
+                                    <td>{{ user_analytics.total_users }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Active Users (Ever Logged In)</strong></td>
+                                    <td>{{ user_analytics.active_users }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Active Last 30 Days</strong></td>
+                                    <td>{{ user_analytics.active_last_month }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Activity Rate</strong></td>
+                                    <td>{{ user_analytics.activity_rate|floatformat:1 }}%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Avg Transactions per User</strong></td>
+                                    <td>{{ user_analytics.avg_transactions_per_user|floatformat:2 }}</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">No user data available</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Information Cards -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Analytics Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">About the Forecast</h6>
+                            <ul class="small text-muted">
+                                <li><strong>Model:</strong> SARIMA (Seasonal AutoRegressive Integrated Moving Average)</li>
+                                <li><strong>Historical Data:</strong> Last 90 days of transaction data</li>
+                                <li><strong>Forecast Period:</strong> Next 30 days</li>
+                                <li><strong>Seasonality:</strong> Weekly patterns detected and incorporated</li>
+                                <li><strong>Confidence:</strong> Based on historical volatility and trends</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-info mb-3">About the Statistics</h6>
+                            <ul class="small text-muted">
+                                <li><strong>Mean:</strong> Average value of the dataset</li>
+                                <li><strong>Median:</strong> Middle value when sorted</li>
+                                <li><strong>Std Dev:</strong> Measure of data spread/variability</li>
+                                <li><strong>Percentiles:</strong> Values below which a percentage of data falls</li>
+                                <li><strong>Skewness:</strong> Measure of asymmetry in distribution</li>
+                                <li><strong>Kurtosis:</strong> Measure of tail heaviness in distribution</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+// Chart color scheme for dark mode
+const chartColors = {
+    primary: '#4e73df',
+    success: '#1cc88a',
+    info: '#36b9cc',
+    warning: '#f6c23e',
+    danger: '#e74c3c',
+    light: '#ecf0f1',
+    dark: '#2c3e50'
+};
+
+// Parse data from Django template
+const historicalData = {{ transaction_data_json|safe }};
+const forecastData = {{ forecast_data_json|safe }};
+
+// Common chart options
+const commonOptions = {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+        legend: {
+            labels: {
+                color: '#ecf0f1',
+                font: { size: 12 }
+            }
+        }
+    },
+    scales: {
+        y: {
+            ticks: { color: '#adb5bd' },
+            grid: { color: '#495057' }
+        },
+        x: {
+            ticks: { color: '#adb5bd' },
+            grid: { color: '#495057' }
+        }
+    }
+};
+
+// Forecast Chart
+const forecastCtx = document.getElementById('forecastChart').getContext('2d');
+const historicalLabels = Object.keys(historicalData).sort();
+const historicalValues = historicalLabels.map(label => historicalData[label]);
+
+const forecastLabels = Object.keys(forecastData).sort();
+const forecastValues = forecastLabels.map(label => forecastData[label]);
+
+// Combine for display
+const allLabels = [...historicalLabels, ...forecastLabels];
+const historicalDataset = historicalValues.concat(Array(forecastLabels.length).fill(null));
+const forecastDataset = Array(historicalLabels.length).fill(null).concat(forecastValues);
+
+new Chart(forecastCtx, {
+    type: 'line',
+    data: {
+        labels: allLabels,
+        datasets: [
+            {
+                label: 'Historical Transaction Volume',
+                data: historicalDataset,
+                borderColor: chartColors.primary,
+                backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 3,
+                pointBackgroundColor: chartColors.primary,
+                pointBorderColor: '#fff',
+                pointBorderWidth: 1,
+                segment: {
+                    borderColor: ctx => ctx.p0.x === undefined ? 'rgba(78, 115, 223, 0.5)' : chartColors.primary
+                }
+            },
+            {
+                label: 'Forecast (SARIMA)',
+                data: forecastDataset,
+                borderColor: chartColors.warning,
+                backgroundColor: 'rgba(246, 194, 62, 0.1)',
+                borderWidth: 2,
+                borderDash: [5, 5],
+                fill: true,
+                tension: 0.4,
+                pointRadius: 3,
+                pointBackgroundColor: chartColors.warning,
+                pointBorderColor: '#fff',
+                pointBorderWidth: 1,
+                segment: {
+                    borderColor: ctx => ctx.p0.x === undefined ? 'rgba(246, 194, 62, 0.5)' : chartColors.warning,
+                    borderDash: [5, 5]
+                }
+            }
+        ]
+    },
+    options: {
+        ...commonOptions,
+        plugins: {
+            ...commonOptions.plugins,
+            filler: { propagate: true }
+        }
+    }
+});
+</script>
+{% endblock %}
+
+{% endblock %}

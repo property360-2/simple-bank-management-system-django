@@ -1,5 +1,5 @@
 from django.urls import path, include
-from . import admin_views
+from . import admin_views, bi_views
 from investments import admin_views as investment_admin_views
 from savings import admin_views as savings_admin_views
 
@@ -8,6 +8,7 @@ app_name = 'admin_panel'
 # Admin dashboard and fraud detection
 dashboard_patterns = [
     path('', admin_views.admin_dashboard, name='dashboard'),
+    path('business-intelligence/', bi_views.business_intelligence, name='business_intelligence'),
     path('fraud-detection/', admin_views.fraud_detection_list, name='fraud_detection_list'),
     path('fraud-detection/<int:pk>/', admin_views.fraud_detection_detail, name='fraud_detection_detail'),
 ]
