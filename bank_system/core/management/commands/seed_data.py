@@ -3,8 +3,9 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from accounts.models import Account
-from transactions.models import Transaction
+from transactions.models import Transaction, FraudDetection
 from savings.models import SavingsProduct, SavingsAccount
 from investments.models import InvestmentPlatform, InvestmentProduct, Portfolio, InvestmentHolding
 from loans.models import LoanProduct, Loan
@@ -32,6 +33,9 @@ class Command(BaseCommand):
 
         # Create users and their data
         self.create_users_with_data()
+
+        # Create fraud detection records
+        self.create_fraud_detection_data()
 
         self.stdout.write(self.style.SUCCESS('Data seeding completed successfully!'))
 
@@ -299,11 +303,12 @@ class Command(BaseCommand):
         accounts_list = list(accounts)
         from_account = accounts_list[0]
 
-        # Create 50-100 transactions per user over the last 6 months
+        # Create 50-100 transactions per user from Oct 17 to Nov 24
         num_transactions = random.randint(50, 100)
         for _ in range(num_transactions):
-            days_ago = random.randint(0, 180)
-            created_at = datetime.now() - timedelta(days=days_ago)
+            # Oct 17 to Nov 24 is approximately 38 days
+            days_ago = random.randint(0, 38)
+            created_at = timezone.now() - timedelta(days=days_ago)
 
             transaction_type = random.choice(['deposit', 'withdrawal', 'transfer'])
             amount = Decimal(random.uniform(10, 5000)).quantize(Decimal('0.01'))
@@ -398,3 +403,47 @@ class Command(BaseCommand):
                     'is_favorite': random.choice([True, False]),
                 }
             )
+
+    def create_fraud_detection_data(self):
+        """Create fraud detection records for demonstration"""
+        try:
+            accounts = Account.objects.all()[:30]  # Use first 30 accounts
+            risk_levels = ['low', 'medium', 'high', 'critical']
+            fraud_reasons = [
+                'Unusual transaction amount detected',
+                'Multiple rapid transactions detected',
+                'Transaction at unusual time',
+                'New recipient transaction',
+                'Geographic anomaly detected',
+                'Pattern deviation detected',
+                'High-value withdrawal attempt',
+                'Suspicious account access pattern',
+            ]
+
+            for account in accounts:
+                # Create 0-3 fraud alerts per account
+                for _ in range(random.randint(0, 3)):
+                    risk_level = random.choices(
+                        risk_levels,
+                        weights=[60, 20, 15, 5],  # More low/medium, fewer critical
+                        k=1
+                    )[0]
+
+                    detected_date = timezone.now() - timedelta(days=random.randint(1, 30))
+
+                    FraudDetection.objects.create(
+                        account=account,
+                        risk_level=risk_level,
+                        status=random.choice(['pending', 'reviewed', 'approved', 'rejected']),
+                        unusual_amount=random.choice([True, False]),
+                        rapid_transactions=random.choice([True, False]),
+                        unusual_time=random.choice([True, False]),
+                        new_recipient=random.choice([True, False]),
+                        geographic_anomaly=random.choice([True, False]),
+                        reason=random.choice(fraud_reasons),
+                        detected_at=detected_date,
+                    )
+
+            self.stdout.write(self.style.SUCCESS('Created fraud detection records'))
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(f'Fraud detection seeding skipped: {str(e)}'))

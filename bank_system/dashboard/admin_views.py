@@ -15,11 +15,11 @@ from users.decorators import manager_required
 
 
 def get_transaction_chart_data():
-    """Get transaction volume data for the last 30 days"""
+    """Get transaction volume data for the last 90 days"""
     try:
         data = {}
-        for i in range(30):
-            date = timezone.now() - timedelta(days=29-i)
+        for i in range(90):
+            date = timezone.now() - timedelta(days=89-i)
             date_key = date.strftime('%b %d')
             count = Transaction.objects.filter(
                 created_at__date=date.date()
@@ -42,11 +42,11 @@ def get_account_type_distribution():
 
 
 def get_user_registration_trend():
-    """Get new users registered in the last 30 days"""
+    """Get new users registered in the last 90 days"""
     try:
         data = {}
-        for i in range(30):
-            date = timezone.now() - timedelta(days=29-i)
+        for i in range(90):
+            date = timezone.now() - timedelta(days=89-i)
             date_key = date.strftime('%b %d')
             count = User.objects.filter(
                 date_joined__date=date.date()
