@@ -10,7 +10,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 import json
 
 from accounts.models import Account
-from transactions.models import Transaction, FraudDetection
+from transactions.models import Transaction
 from savings.models import SavingsProduct, SavingsAccount
 from investments.models import InvestmentProduct, Portfolio
 from users.models import User
@@ -104,25 +104,6 @@ def get_transaction_type_distribution():
         return {}
 
 
-def get_fraud_distribution():
-    """Get distribution of fraud by risk level with caching"""
-    cache_key = 'admin_fraud_data'
-    data = cache.get(cache_key)
-
-    if data is not None:
-        return data
-
-    try:
-        distribution = FraudDetection.objects.values('risk_level').annotate(
-            count=Count('id')
-        ).order_by('risk_level')
-        data = {item['risk_level']: item['count'] for item in distribution}
-        cache.set(cache_key, data, 300)
-        return data
-    except:
-        return {}
-
-
 @manager_required
 def admin_dashboard(request):
     """Admin dashboard with business analytics"""
@@ -154,18 +135,6 @@ def admin_dashboard(request):
     except:
         total_transactions = this_month_transactions = total_transaction_volume = 0
 
-    # Fraud alerts
-    try:
-        pending_fraud = FraudDetection.objects.filter(status='pending').count()
-        critical_fraud = FraudDetection.objects.filter(
-            risk_level='critical',
-            status='pending'
-        ).count()
-        fraud_alerts = FraudDetection.objects.filter(status='pending')[:10]
-    except:
-        pending_fraud = critical_fraud = 0
-        fraud_alerts = []
-
     # Savings analytics
     try:
         total_savings_products = SavingsProduct.objects.count()
@@ -187,7 +156,6 @@ def admin_dashboard(request):
     account_type_data = get_account_type_distribution()
     user_registration_data = get_user_registration_trend()
     transaction_type_data = get_transaction_type_distribution()
-    fraud_data = get_fraud_distribution()
 
     context = {
         'total_users': total_users,
@@ -199,9 +167,6 @@ def admin_dashboard(request):
         'total_transactions': total_transactions,
         'this_month_transactions': this_month_transactions,
         'total_transaction_volume': total_transaction_volume,
-        'pending_fraud': pending_fraud,
-        'critical_fraud': critical_fraud,
-        'fraud_alerts': fraud_alerts,
         'total_savings_products': total_savings_products,
         'active_savings_accounts': active_savings_accounts,
         'total_savings_balance': total_savings_balance,
@@ -213,87 +178,7 @@ def admin_dashboard(request):
         'account_type_data_json': json.dumps(account_type_data, cls=DjangoJSONEncoder),
         'user_registration_data_json': json.dumps(user_registration_data, cls=DjangoJSONEncoder),
         'transaction_type_data_json': json.dumps(transaction_type_data, cls=DjangoJSONEncoder),
-        'fraud_data_json': json.dumps(fraud_data, cls=DjangoJSONEncoder),
     }
     return render(request, 'admin/dashboard.html', context)
 
 
-@manager_required
-def fraud_detection_list(request):
-    """List and manage fraud alerts"""
-    status_filter = request.GET.get('status')
-    risk_filter = request.GET.get('risk')
-    is_ajax = request.GET.get('ajax') == 'true'
-
-    try:
-        frauds = FraudDetection.objects.all().order_by('-detected_at')
-
-        if status_filter:
-            frauds = frauds.filter(status=status_filter)
-        if risk_filter:
-            frauds = frauds.filter(risk_level=risk_filter)
-
-        # Get statistics by status and risk
-        pending_count = FraudDetection.objects.filter(status='pending').count()
-        reviewing_count = FraudDetection.objects.filter(status='reviewed').count()
-        resolved_count = FraudDetection.objects.filter(Q(status='approved') | Q(status='rejected')).count()
-        high_risk_count = FraudDetection.objects.filter(risk_level='high').count()
-    except:
-        frauds = []
-        pending_count = reviewing_count = resolved_count = high_risk_count = 0
-
-    context = {
-        'frauds': frauds,
-        'pending_count': pending_count,
-        'reviewing_count': reviewing_count,
-        'resolved_count': resolved_count,
-        'high_risk_count': high_risk_count,
-        'current_status': status_filter,
-        'current_risk': risk_filter,
-    }
-
-    # Return partial template for AJAX requests (just the table)
-    if is_ajax:
-        return render(request, 'admin/fraud_detection_table.html', context)
-
-    return render(request, 'admin/fraud_detection_list.html', context)
-
-
-@manager_required
-def fraud_detection_detail(request, pk):
-    """View and review fraud alert details"""
-    try:
-        fraud = get_object_or_404(FraudDetection, pk=pk)
-
-        # Handle status changes via GET parameters for the template buttons
-        if request.method == 'GET':
-            action = request.GET.get('action')
-            if action in ['review', 'approve', 'reject']:
-                if action == 'review':
-                    fraud.status = 'reviewed'
-                    fraud.reviewed_by = request.user
-                    fraud.reviewed_at = timezone.now()
-                    fraud.save()
-                    messages.success(request, 'Fraud case marked as reviewed')
-                elif action == 'approve':
-                    fraud.status = 'approved'
-                    fraud.reviewed_by = request.user
-                    fraud.reviewed_at = timezone.now()
-                    fraud.save()
-                    messages.success(request, 'Fraud alert approved')
-                elif action == 'reject':
-                    fraud.status = 'rejected'
-                    fraud.reviewed_by = request.user
-                    fraud.reviewed_at = timezone.now()
-                    fraud.save()
-                    messages.success(request, 'Fraud alert rejected')
-
-                return redirect('admin_panel:fraud_detection_detail', pk=fraud.pk)
-
-        context = {
-            'fraud': fraud,
-        }
-        return render(request, 'admin/fraud_detection_detail.html', context)
-    except:
-        messages.error(request, 'Fraud detection data not available. Please run migrations.')
-        return redirect('admin_panel:fraud_detection_list')
