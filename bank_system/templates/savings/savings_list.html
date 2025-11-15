@@ -31,7 +31,7 @@
                             <h5 class="card-title mb-1">{{ account.product.name }}</h5>
                             <small class="text-muted">{{ account.account_number }}</small>
                         </div>
-                        <span class="badge bg-{{ account.status == 'active' and 'success' or 'secondary' }}">
+                        <span class="badge {% if account.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">
                             {{ account.get_status_display }}
                         </span>
                     </div>
