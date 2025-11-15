@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-admin="true">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Panel{% endblock %} - Bank Management System</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Dark Mode Admin CSS -->
+    <link rel="stylesheet" href="{% static 'css/admin_dark.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'admin:dashboard' %}">
+                <i class="fas fa-shield-alt"></i> Admin Panel
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">
+                            <i class="fas fa-home"></i> Main Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-shield"></i> {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'settings:profile_edit' %}">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="p-4">
+                <h5 class="text-primary mb-4">Menu</h5>
+                <div class="admin-sidebar-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <a href="{% url 'admin:dashboard' %}" class="text-decoration-none d-flex align-items-center">
+                        <i class="fas fa-chart-line me-2"></i> Dashboard
+                    </a>
+                </div>
+
+                <h6 class="text-secondary text-uppercase mt-4 mb-2" style="font-size: 0.75rem; letter-spacing: 1px;">Product Management</h6>
+                <div class="admin-sidebar-item {% if 'investment' in request.path %}active{% endif %}">
+                    <a href="{% url 'admin:investment_products_list' %}" class="text-decoration-none d-flex align-items-center">
+                        <i class="fas fa-chart-pie me-2"></i> Investment Products
+                    </a>
+                </div>
+                <div class="admin-sidebar-item">
+                    <a href="{% url 'admin:investment_platforms_list' %}" class="text-decoration-none d-flex align-items-center">
+                        <i class="fas fa-building me-2"></i> Investment Platforms
+                    </a>
+                </div>
+                <div class="admin-sidebar-item {% if 'savings' in request.path %}active{% endif %}">
+                    <a href="{% url 'admin:savings_products_list' %}" class="text-decoration-none d-flex align-items-center">
+                        <i class="fas fa-piggy-bank me-2"></i> Savings Products
+                    </a>
+                </div>
+
+                <h6 class="text-secondary text-uppercase mt-4 mb-2" style="font-size: 0.75rem; letter-spacing: 1px;">Security</h6>
+                <div class="admin-sidebar-item {% if 'fraud' in request.path %}active{% endif %}">
+                    <a href="{% url 'admin:fraud_detection_list' %}" class="text-decoration-none d-flex align-items-center">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Fraud Detection
+                        {% if pending_fraud_count %}
+                        <span class="badge bg-danger ms-auto">{{ pending_fraud_count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main w-100">
+            {% include 'includes/_alerts.html' %}
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

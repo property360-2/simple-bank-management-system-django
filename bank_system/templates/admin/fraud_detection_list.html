@@ -1,0 +1,226 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Fraud Detection{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="fas fa-shield-alt me-2"></i>Fraud Detection</h1>
+            <p>Monitor and manage suspicious transaction activities</p>
+        </div>
+        <div class="btn-group" role="group">
+            <a href="?status=pending" class="btn btn-outline-warning {% if request.GET.status == 'pending' %}active{% endif %}">
+                <i class="fas fa-hourglass-half me-2"></i>Pending
+            </a>
+            <a href="?status=reviewing" class="btn btn-outline-info {% if request.GET.status == 'reviewing' %}active{% endif %}">
+                <i class="fas fa-eye me-2"></i>Reviewing
+            </a>
+            <a href="?status=resolved" class="btn btn-outline-success {% if request.GET.status == 'resolved' %}active{% endif %}">
+                <i class="fas fa-check-circle me-2"></i>Resolved
+            </a>
+            <a href="{% url 'admin:fraud_detection_list' %}" class="btn btn-outline-secondary {% if not request.GET.status %}active{% endif %}">
+                <i class="fas fa-redo me-2"></i>All
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid px-4 pb-4">
+    {% if messages %}
+    <div class="row mb-4">
+        <div class="col-12">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">High Risk</div>
+                    <div class="stat-value">{{ high_risk_count }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-warning">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Pending Review</div>
+                    <div class="stat-value">{{ pending_count }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-info">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Under Review</div>
+                    <div class="stat-value">{{ reviewing_count }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-success">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">Resolved</div>
+                    <div class="stat-value">{{ resolved_count }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fraud Cases Table -->
+    <div class="card">
+        <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0">Fraud Cases</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Transaction</th>
+                        <th>User</th>
+                        <th>Amount</th>
+                        <th>Risk Level</th>
+                        <th>Flags</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fraud in frauds %}
+                    <tr>
+                        <td>
+                            <strong>#{{ fraud.transaction.id }}</strong>
+                            <br>
+                            <small class="text-muted">{{ fraud.transaction.transaction_type }}</small>
+                        </td>
+                        <td>
+                            <strong>{{ fraud.transaction.from_account.user.username }}</strong>
+                            <br>
+                            <small class="text-muted">{{ fraud.transaction.from_account.account_number }}</small>
+                        </td>
+                        <td>
+                            <strong>${{ fraud.transaction.amount|floatformat:2 }}</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if fraud.risk_level == 'high' %}danger{% elif fraud.risk_level == 'medium' %}warning{% else %}success{% endif %}">
+                                {{ fraud.get_risk_level_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-wrap gap-1">
+                                {% if fraud.unusual_amount %}<span class="badge badge-pill bg-danger-subtle text-danger-emphasis">Amount</span>{% endif %}
+                                {% if fraud.rapid_transactions %}<span class="badge badge-pill bg-danger-subtle text-danger-emphasis">Rapid</span>{% endif %}
+                                {% if fraud.unusual_time %}<span class="badge badge-pill bg-danger-subtle text-danger-emphasis">Time</span>{% endif %}
+                                {% if fraud.new_recipient %}<span class="badge badge-pill bg-danger-subtle text-danger-emphasis">New Recipient</span>{% endif %}
+                                {% if fraud.geographic_anomaly %}<span class="badge badge-pill bg-danger-subtle text-danger-emphasis">Location</span>{% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if fraud.status == 'pending' %}warning{% elif fraud.status == 'reviewing' %}info{% elif fraud.status == 'confirmed' %}danger{% else %}success{% endif %}">
+                                {{ fraud.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <small>{{ fraud.created_at|date:"M d, Y H:i" }}</small>
+                        </td>
+                        <td>
+                            <a href="{% url 'admin:fraud_detection_detail' fraud.pk %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i> Review
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                            <p class="text-muted">No fraud cases found</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: var(--bs-card-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.375rem;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.25rem;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--bs-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--bs-body-color);
+}
+
+.badge-pill {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+}
+
+.bg-danger-subtle {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+.text-danger-emphasis {
+    color: #842029;
+}
+</style>
+{% endblock %}

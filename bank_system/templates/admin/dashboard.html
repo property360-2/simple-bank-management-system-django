@@ -1,0 +1,254 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1><i class="fas fa-chart-line me-2"></i>Analytics Dashboard</h1>
+    <p>Business metrics and system overview</p>
+</div>
+
+<div class="container-fluid px-4 pb-4">
+    <!-- Alert Box -->
+    {% if critical_fraud %}
+    <div class="alert alert-danger mb-4">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <strong>Critical Alert!</strong> You have <strong>{{ critical_fraud }}</strong> critical fraud alerts pending review.
+        <a href="{% url 'admin:fraud_detection_list' %}?risk=critical" class="alert-link">Review Now</a>
+    </div>
+    {% endif %}
+
+    <!-- User Analytics -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-card-label">Total Users</div>
+                        <div class="stat-card-value">{{ total_users }}</div>
+                    </div>
+                    <i class="fas fa-users fa-2x text-info"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-card-label">Active Users</div>
+                        <div class="stat-card-value">{{ active_users }}</div>
+                    </div>
+                    <i class="fas fa-user-check fa-2x text-success"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-card-label">New This Month</div>
+                        <div class="stat-card-value">{{ new_users_this_month }}</div>
+                    </div>
+                    <i class="fas fa-user-plus fa-2x text-warning"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-card-label">Fraud Alerts</div>
+                        <div class="stat-card-value">{{ pending_fraud }}</div>
+                    </div>
+                    <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account & Transaction Analytics -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-card-label">Total Accounts</div>
+                        <div class="stat-card-value">{{ total_accounts }}</div>
+                    </div>
+                    <i class="fas fa-wallet fa-2x text-info"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-card-label">Total Balance</div>
+                        <div class="stat-card-value">${{ total_balance|floatformat:0 }}</div>
+                    </div>
+                    <i class="fas fa-money-bill-wave fa-2x text-success"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-card-label">Total Transactions</div>
+                        <div class="stat-card-value">{{ total_transactions }}</div>
+                    </div>
+                    <i class="fas fa-exchange-alt fa-2x text-warning"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-card-label">This Month</div>
+                        <div class="stat-card-value">{{ this_month_transactions }}</div>
+                    </div>
+                    <i class="fas fa-calendar-alt fa-2x text-info"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Investment & Savings Analytics -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-card-label">Investment Products</div>
+                        <div class="stat-card-value">{{ total_investment_products }}</div>
+                    </div>
+                    <i class="fas fa-chart-pie fa-2x text-success"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-card-label">Active Portfolios</div>
+                        <div class="stat-card-value">{{ active_portfolios }}</div>
+                    </div>
+                    <i class="fas fa-briefcase fa-2x text-warning"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-card-label">Savings Products</div>
+                        <div class="stat-card-value">{{ total_savings_products }}</div>
+                    </div>
+                    <i class="fas fa-piggy-bank fa-2x text-success"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-card-label">Active Savings</div>
+                        <div class="stat-card-value">{{ active_savings_accounts }}</div>
+                    </div>
+                    <i class="fas fa-trending-up fa-2x text-info"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Fraud Alerts -->
+    {% if fraud_alerts %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-exclamation-triangle me-2"></i>Pending Fraud Alerts
+            </h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Account</th>
+                        <th>Risk Level</th>
+                        <th>Reason</th>
+                        <th>Detected</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fraud in fraud_alerts %}
+                    <tr>
+                        <td>
+                            <strong>{{ fraud.account.user.get_full_name|default:fraud.account.user.username }}</strong>
+                            <br>
+                            <small class="text-muted">{{ fraud.account.account_number }}</small>
+                        </td>
+                        <td>
+                            <span class="badge badge-{% if fraud.risk_level == 'critical' %}danger{% elif fraud.risk_level == 'high' %}warning{% else %}info{% endif %}">
+                                {{ fraud.get_risk_level_display }}
+                            </span>
+                        </td>
+                        <td>{{ fraud.reason|truncatewords:10 }}</td>
+                        <td>{{ fraud.detected_at|date:"M d, H:i" }}</td>
+                        <td>
+                            <a href="{% url 'admin:fraud_detection_detail' fraud.pk %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i> Review
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card-body pt-3">
+            <a href="{% url 'admin:fraud_detection_list' %}" class="btn btn-primary">
+                <i class="fas fa-list me-2"></i>View All Alerts
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quick Actions -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-chart-pie me-2"></i>Product Management</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'admin:investment_products_list' %}" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-plus me-2"></i>Investment Products
+                    </a>
+                    <a href="{% url 'admin:investment_platforms_list' %}" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-plus me-2"></i>Investment Platforms
+                    </a>
+                    <a href="{% url 'admin:savings_products_list' %}" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-plus me-2"></i>Savings Products
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-shield-alt me-2"></i>Security & Monitoring</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'admin:fraud_detection_list' %}" class="btn btn-outline-danger w-100 mb-2">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Fraud Alerts ({{ pending_fraud }})
+                    </a>
+                    <a href="{% url 'admin:fraud_detection_list' %}?status=reviewed" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-check me-2"></i>Reviewed Cases
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

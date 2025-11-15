@@ -1,0 +1,58 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Confirm Delete{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1><i class="fas fa-trash-alt me-2"></i>Confirm Deletion</h1>
+            <p>Please confirm you want to delete this item</p>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid px-4 pb-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-exclamation-triangle fa-3x text-danger"></i>
+                    </div>
+
+                    <h4 class="card-title text-danger mb-3">Delete Confirmation</h4>
+
+                    <p class="card-text mb-4">
+                        Are you sure you want to delete <strong>{{ object }}</strong>?
+                    </p>
+
+                    {% if object_type %}
+                    <p class="card-text small text-muted mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Type: <strong>{{ object_type }}</strong>
+                    </p>
+                    {% endif %}
+
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <strong>Warning:</strong> This action cannot be undone. Please make sure you want to proceed.
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <form method="post" class="d-grid">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="fas fa-check me-2"></i>Yes, Delete
+                            </button>
+                        </form>
+                        <a href="{{ back_url }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
