@@ -9,7 +9,7 @@
             <h1><i class="fas fa-chart-pie me-2"></i>Investment Products</h1>
             <p>Manage and configure investment products</p>
         </div>
-        <a href="{% url 'admin:investment_product_create' %}" class="btn btn-primary">
+        <a href="{% url 'admin_panel:investment_product_create' %}" class="btn btn-primary">
             <i class="fas fa-plus me-2"></i>Add Product
         </a>
     </div>
@@ -35,7 +35,7 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-search me-2"></i>Filter
                     </button>
-                    <a href="{% url 'admin:investment_products_list' %}" class="btn btn-outline-secondary">
+                    <a href="{% url 'admin_panel:investment_products_list' %}" class="btn btn-outline-secondary">
                         <i class="fas fa-redo me-2"></i>Reset
                     </a>
                 </div>
@@ -83,10 +83,10 @@
                         </td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="{% url 'admin:investment_product_edit' product.pk %}" class="btn btn-sm btn-outline-primary">
+                                <a href="{% url 'admin_panel:investment_product_edit' product.pk %}" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="{% url 'admin:investment_product_delete' product.pk %}" class="btn btn-sm btn-outline-danger">
+                                <a href="{% url 'admin_panel:investment_product_delete' product.pk %}" class="btn btn-sm btn-outline-danger">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </div>

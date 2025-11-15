@@ -22,7 +22,7 @@ def savings_product_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Savings product created successfully!')
-            return redirect('admin:savings_products_list')
+            return redirect('admin_panel:savings_products_list')
     else:
         form = SavingsProductForm()
 
@@ -40,7 +40,7 @@ def savings_product_edit(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'Savings product updated successfully!')
-            return redirect('admin:savings_products_list')
+            return redirect('admin_panel:savings_products_list')
     else:
         form = SavingsProductForm(instance=product)
 
@@ -56,7 +56,7 @@ def savings_product_delete(request, pk):
     if request.method == 'POST':
         product.delete()
         messages.success(request, 'Savings product deleted successfully!')
-        return redirect('admin:savings_products_list')
+        return redirect('admin_panel:savings_products_list')
 
     context = {'product': product}
     return render(request, 'admin/confirm_delete.html', context)

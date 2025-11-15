@@ -19,11 +19,11 @@ class CustomLoginView(DjangoLoginView):
         try:
             # Admin users go to admin dashboard
             if user.is_admin_user():
-                return reverse('admin:dashboard')
+                return reverse('admin_panel:dashboard')
 
             # Managers go to manager dashboard (can be same as admin or separate)
             elif user.is_manager():
-                return reverse('admin:dashboard')
+                return reverse('admin_panel:dashboard')
 
             # Customers go to regular dashboard
             else:

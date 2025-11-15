@@ -134,7 +134,7 @@ def fraud_detection_detail(request, pk):
                 fraud.save()
                 messages.success(request, 'Fraud alert rejected')
 
-            return redirect('admin:fraud_detection_detail', pk=fraud.pk)
+            return redirect('admin_panel:fraud_detection_detail', pk=fraud.pk)
 
     context = {
         'fraud': fraud,
