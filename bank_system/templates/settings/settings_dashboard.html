@@ -14,6 +14,9 @@
             <a href="{% url 'settings:profile_edit' %}" class="list-group-item list-group-item-action {% if active_tab == 'profile' %}active{% endif %}">
                 <i class="fas fa-user"></i> Edit Profile
             </a>
+            <a href="{% url 'settings:preferences' %}" class="list-group-item list-group-item-action {% if active_tab == 'preferences' %}active{% endif %}">
+                <i class="fas fa-sliders-h"></i> Preferences
+            </a>
             <a href="{% url 'settings:change_password' %}" class="list-group-item list-group-item-action {% if active_tab == 'security' %}active{% endif %}">
                 <i class="fas fa-key"></i> Change Password
             </a>

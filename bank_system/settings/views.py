@@ -43,6 +43,33 @@ def profile_edit(request):
 
 
 @login_required
+def preferences(request):
+    """User preferences and personalization settings"""
+    # Get or create user preferences
+    preferences, created = UserPreferences.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = UserPreferencesForm(request.POST, instance=preferences)
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request,
+                f'Your preferences have been updated! Currency changed to {preferences.get_currency_display()}'
+            )
+            return redirect('settings:preferences')
+    else:
+        form = UserPreferencesForm(instance=preferences)
+
+    context = {
+        'form': form,
+        'preferences': preferences,
+        'page_title': 'Preferences',
+        'active_tab': 'preferences'
+    }
+    return render(request, 'settings/preferences.html', context)
+
+
+@login_required
 def change_password(request):
     """Change password"""
     if request.method == 'POST':
@@ -94,3 +121,4 @@ def account_summary(request):
         'active_tab': 'account_summary'
     }
     return render(request, 'settings/account_summary.html', context)
+

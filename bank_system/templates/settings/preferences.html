@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block title %}Preferences - Settings{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="list-group">
+            <a href="{% url 'settings:profile_edit' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-user"></i> Edit Profile
+            </a>
+            <a href="{% url 'settings:preferences' %}" class="list-group-item list-group-item-action active">
+                <i class="fas fa-sliders-h"></i> Preferences
+            </a>
+            <a href="{% url 'settings:change_password' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-key"></i> Change Password
+            </a>
+            <a href="{% url 'settings:security' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-shield-alt"></i> Security & Privacy
+            </a>
+            <a href="{% url 'settings:account_summary' %}" class="list-group-item list-group-item-action">
+                <i class="fas fa-credit-card"></i> Account Summary
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header bg-secondary">
+                <h3 class="card-title mb-0"><i class="fas fa-sliders-h"></i> Personalization & Preferences</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" class="needs-validation">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <label for="{{ form.currency.id_for_label }}" class="form-label">
+                                    <strong><i class="fas fa-coins"></i> Preferred Currency</strong>
+                                </label>
+                                {% if form.currency.errors %}
+                                    <div class="invalid-feedback d-block">{{ form.currency.errors }}</div>
+                                {% endif %}
+                                {{ form.currency }}
+                                {% if form.currency.help_text %}
+                                    <small class="form-text text-muted d-block mt-2">
+                                        {{ form.currency.help_text|safe }}
+                                    </small>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <label class="form-label"><strong>Display Settings</strong></label>
+                                <div class="form-check">
+                                    {{ form.show_balance }}
+                                    <label class="form-check-label" for="{{ form.show_balance.id_for_label }}">
+                                        Show account balance on dashboard
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Currency Preview -->
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="card border-info">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fas fa-info-circle"></i> Currency Information</h5>
+                                    <p class="card-text text-muted">
+                                        Your selected currency is: <strong class="text-primary">{{ preferences.currency }}</strong>
+                                    </p>
+                                    <p class="card-text text-muted">
+                                        All monetary values throughout the application will be automatically converted and displayed in your preferred currency.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Supported Currencies -->
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header bg-secondary">
+                                    <h6 class="card-title mb-0"><i class="fas fa-globe"></i> Supported Currencies</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6 class="text-primary mb-3">Fiat Currencies</h6>
+                                            <ul class="list-unstyled">
+                                                <li><i class="fas fa-check-circle text-success"></i> USD - US Dollar</li>
+                                                <li><i class="fas fa-check-circle text-success"></i> PHP - Philippine Peso</li>
+                                                <li><i class="fas fa-check-circle text-success"></i> EUR - Euro</li>
+                                                <li><i class="fas fa-check-circle text-success"></i> GBP - British Pound</li>
+                                                <li><i class="fas fa-check-circle text-success"></i> JPY - Japanese Yen</li>
+                                                <li><i class="fas fa-check-circle text-success"></i> AUD - Australian Dollar</li>
+                                                <li><i class="fas fa-check-circle text-success"></i> CAD - Canadian Dollar</li>
+                                                <li><i class="fas fa-check-circle text-success"></i> SGD - Singapore Dollar</li>
+                                                <li><i class="fas fa-check-circle text-success"></i> HKD - Hong Kong Dollar</li>
+                                                <li><i class="fas fa-check-circle text-success"></i> INR - Indian Rupee</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6 class="text-primary mb-3">Asian & Crypto Currencies</h6>
+                                            <ul class="list-unstyled">
+                                                <li><i class="fas fa-check-circle text-success"></i> MYR - Malaysian Ringgit</li>
+                                                <li><i class="fas fa-check-circle text-success"></i> THB - Thai Baht</li>
+                                                <li><i class="fas fa-check-circle text-success"></i> VND - Vietnamese Dong</li>
+                                                <li><i class="fas fa-check-circle text-success"></i> IDR - Indonesian Rupiah</li>
+                                                <li><i class="fas fa-check-circle text-warning"></i> BTC - Bitcoin</li>
+                                                <li><i class="fas fa-check-circle text-warning"></i> ETH - Ethereum</li>
+                                                <li><i class="fas fa-check-circle text-warning"></i> USDT - Tether</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Save Preferences
+                        </button>
+                        <a href="{% url 'settings:dashboard' %}" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
