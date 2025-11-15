@@ -99,14 +99,16 @@
                                                 <div class="modal-body">
                                                     <input type="hidden" name="product" value="{{ product.id }}">
 
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Product</label>
-                                                        <input type="text" class="form-control" value="{{ product.name }}" disabled>
+                                                    <div class="mb-4">
+                                                        <small class="text-muted d-block">Product</small>
+                                                        <strong class="h5">{{ product.name }}</strong>
+                                                        <br>
+                                                        <small class="text-muted">{{ product.symbol }} • {{ product.platform.name }}</small>
                                                     </div>
 
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Current Price</label>
-                                                        <input type="text" class="form-control" value="{% format_amount product.current_price user=request.user %}" disabled>
+                                                    <div class="mb-4">
+                                                        <small class="text-muted d-block">Current Price per Share/Unit</small>
+                                                        <strong class="h5">{% format_amount product.current_price user=request.user %}</strong>
                                                     </div>
 
                                                     <div class="mb-3">
