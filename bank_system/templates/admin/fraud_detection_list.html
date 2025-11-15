@@ -92,47 +92,78 @@
         </div>
     </div>
 
-    <!-- Fraud Cases Table -->
-    <div class="card">
-        <div class="card-header bg-light border-bottom">
-            <h5 class="mb-0">Fraud Cases</h5>
+    <!-- Fraud Cases Table with Filters -->
+    <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-filter me-2"></i>Filters</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'admin_panel:fraud_detection_list' %}" class="btn btn-outline-secondary {% if not request.GET.status %}active{% endif %}">
+                            <i class="fas fa-list me-2"></i>All
+                        </a>
+                        <a href="?status=pending" class="btn btn-outline-warning {% if request.GET.status == 'pending' %}active{% endif %}">
+                            <i class="fas fa-hourglass-half me-2"></i>Pending
+                        </a>
+                        <a href="?status=reviewed" class="btn btn-outline-info {% if request.GET.status == 'reviewed' %}active{% endif %}">
+                            <i class="fas fa-eye me-2"></i>Reviewed
+                        </a>
+                        <a href="?status=approved" class="btn btn-outline-success {% if request.GET.status == 'approved' %}active{% endif %}">
+                            <i class="fas fa-check-circle me-2"></i>Approved
+                        </a>
+                        <a href="?status=rejected" class="btn btn-outline-danger {% if request.GET.status == 'rejected' %}active{% endif %}">
+                            <i class="fas fa-times-circle me-2"></i>Rejected
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="table-responsive">
-            <table class="table table-dark mb-0">
-                <thead>
-                    <tr>
-                        <th>Transaction</th>
-                        <th>User</th>
-                        <th>Amount</th>
-                        <th>Risk Level</th>
-                        <th>Flags</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for fraud in frauds %}
-                    <tr>
-                        <td>
-                            <strong>#{{ fraud.transaction.id }}</strong>
-                            <br>
-                            <small class="text-muted">{{ fraud.transaction.transaction_type }}</small>
-                        </td>
-                        <td>
-                            <strong>{{ fraud.transaction.from_account.user.username }}</strong>
-                            <br>
-                            <small class="text-muted">{{ fraud.transaction.from_account.account_number }}</small>
-                        </td>
-                        <td>
-                            <strong>${{ fraud.transaction.amount|floatformat:2 }}</strong>
-                        </td>
-                        <td>
+
+        <!-- Fraud Cases Table -->
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Fraud Cases</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-dark mb-0">
+                        <thead>
+                            <tr>
+                                <th>Transaction</th>
+                                <th>User</th>
+                                <th>Amount</th>
+                                <th>Risk Level</th>
+                                <th>Flags</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fraud in frauds %}
+                            <tr>
+                                <td class="text-light">
+                                    <strong>#{{ fraud.transaction.id }}</strong>
+                                    <br>
+                                    <small class="text-info">{{ fraud.transaction.transaction_type }}</small>
+                                </td>
+                                <td class="text-light">
+                                    <strong>{{ fraud.transaction.from_account.user.username }}</strong>
+                                    <br>
+                                    <small class="text-info">{{ fraud.transaction.from_account.account_number }}</small>
+                                </td>
+                                <td class="text-light">
+                                    <strong>${{ fraud.transaction.amount|floatformat:2 }}</strong>
+                                </td>
+                        <td class="text-light">
                             <span class="badge bg-{% if fraud.risk_level == 'high' %}danger{% elif fraud.risk_level == 'medium' %}warning{% else %}success{% endif %}">
                                 {{ fraud.get_risk_level_display }}
                             </span>
                         </td>
-                        <td>
+                        <td class="text-light">
                             <div class="d-flex flex-wrap gap-1">
                                 {% if fraud.unusual_amount %}<span class="badge badge-pill bg-danger-subtle text-danger-emphasis">Amount</span>{% endif %}
                                 {% if fraud.rapid_transactions %}<span class="badge badge-pill bg-danger-subtle text-danger-emphasis">Rapid</span>{% endif %}
@@ -141,15 +172,15 @@
                                 {% if fraud.geographic_anomaly %}<span class="badge badge-pill bg-danger-subtle text-danger-emphasis">Location</span>{% endif %}
                             </div>
                         </td>
-                        <td>
+                        <td class="text-light">
                             <span class="badge bg-{% if fraud.status == 'pending' %}warning{% elif fraud.status == 'reviewed' %}info{% elif fraud.status == 'approved' %}success{% else %}danger{% endif %}">
                                 {{ fraud.get_status_display }}
                             </span>
                         </td>
-                        <td>
+                        <td class="text-light">
                             <small>{{ fraud.detected_at|date:"M d, Y H:i" }}</small>
                         </td>
-                        <td>
+                        <td class="text-light">
                             <a href="{% url 'admin_panel:fraud_detection_detail' fraud.pk %}" class="btn btn-sm btn-outline-primary">
                                 <i class="fas fa-eye"></i> Review
                             </a>
@@ -157,14 +188,16 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="8" class="text-center py-4">
+                        <td colspan="8" class="text-center py-4 text-light">
                             <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
-                            <p class="text-muted">No fraud cases found</p>
+                            <p class="text-info">No fraud cases found</p>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
