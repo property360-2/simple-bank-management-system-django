@@ -5,14 +5,8 @@
 <div class="row mb-4">
     <div class="col-md-3">
         <div class="list-group">
-            <a href="{% url 'settings:preferences' %}" class="list-group-item list-group-item-action">
-                <i class="fas fa-palette"></i> Preferences
-            </a>
             <a href="{% url 'settings:profile_edit' %}" class="list-group-item list-group-item-action">
                 <i class="fas fa-user"></i> Edit Profile
-            </a>
-            <a href="{% url 'settings:profile_edit_otp' %}" class="list-group-item list-group-item-action">
-                <i class="fas fa-lock"></i> Profile with OTP
             </a>
             <a href="{% url 'settings:change_password' %}" class="list-group-item list-group-item-action">
                 <i class="fas fa-key"></i> Change Password
@@ -22,9 +16,6 @@
             </a>
             <a href="{% url 'settings:account_summary' %}" class="list-group-item list-group-item-action active">
                 <i class="fas fa-credit-card"></i> Account Summary
-            </a>
-            <a href="{% url 'settings:notifications' %}" class="list-group-item list-group-item-action">
-                <i class="fas fa-bell"></i> Notifications
             </a>
         </div>
     </div>

@@ -5,14 +5,8 @@
 <div class="row mb-4">
     <div class="col-md-3">
         <div class="list-group">
-            <a href="{% url 'settings:preferences' %}" class="list-group-item list-group-item-action">
-                <i class="fas fa-palette"></i> Preferences
-            </a>
             <a href="{% url 'settings:profile_edit' %}" class="list-group-item list-group-item-action">
                 <i class="fas fa-user"></i> Edit Profile
-            </a>
-            <a href="{% url 'settings:profile_edit_otp' %}" class="list-group-item list-group-item-action">
-                <i class="fas fa-lock"></i> Profile with OTP
             </a>
             <a href="{% url 'settings:change_password' %}" class="list-group-item list-group-item-action">
                 <i class="fas fa-key"></i> Change Password
@@ -23,44 +17,11 @@
             <a href="{% url 'settings:account_summary' %}" class="list-group-item list-group-item-action">
                 <i class="fas fa-credit-card"></i> Account Summary
             </a>
-            <a href="{% url 'settings:notifications' %}" class="list-group-item list-group-item-action">
-                <i class="fas fa-bell"></i> Notifications
-            </a>
         </div>
     </div>
 
     <div class="col-md-9">
-        <div class="card mb-4">
-            <div class="card-header bg-light">
-                <h3 class="card-title mb-0"><i class="fas fa-shield-alt"></i> Security & Privacy Settings</h3>
-            </div>
-            <div class="card-body">
-                <form method="POST" class="needs-validation">
-                    {% csrf_token %}
-
-                    <div class="mb-4">
-                        <h5><i class="fas fa-lock"></i> Two-Factor Authentication</h5>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" name="two_factor_enabled" id="two_factor_enabled" {% if user_prefs.two_factor_enabled %}checked{% endif %}>
-                            <label class="form-check-label" for="two_factor_enabled">
-                                Enable Two-Factor Authentication (OTP via SMS)
-                            </label>
-                        </div>
-                        <p class="text-muted mt-2">
-                            When enabled, you'll need to verify your identity using an OTP code sent to your phone when logging in from a new device.
-                        </p>
-                    </div>
-
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-save"></i> Save Security Settings
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Security Alerts -->
+        <!-- Security Activity -->
         <div class="card mb-4">
             <div class="card-header bg-light">
                 <h5 class="card-title mb-0"><i class="fas fa-history"></i> Recent Security Activity</h5>
