@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load currency_tags %}
+
+{% block title %}Savings Goals{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1><i class="fas fa-bullseye text-primary"></i> Savings Goals</h1>
+            <p class="text-muted">Track your progress towards your financial goals</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'savings:savings_list' %}" class="btn btn-outline-primary" data-loading>
+                <i class="fas fa-arrow-left"></i> Back to Savings
+            </a>
+        </div>
+    </div>
+
+    {% if goals %}
+    <div class="row g-4">
+        {% for goal in goals %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="card-title mb-1">{{ goal.name }}</h5>
+                            <small class="text-muted">in {{ goal.savings_account.product.name }}</small>
+                        </div>
+                        <span class="badge bg-{% if goal.status == 'completed' %}success{% elif goal.status == 'active' %}primary{% else %}secondary{% endif %}">
+                            {{ goal.get_status_display }}
+                        </span>
+                    </div>
+
+                    {% if goal.description %}
+                    <p class="text-muted small mb-3">{{ goal.description }}</p>
+                    {% endif %}
+
+                    <!-- Progress Bar -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <small class="text-muted">Progress</small>
+                            <small class="text-primary font-monospace"><strong>{{ goal.progress_percentage|floatformat:1 }}%</strong></small>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar {% if goal.is_achieved %}bg-success{% else %}bg-primary{% endif %}"
+                                 role="progressbar"
+                                 style="width: {{ goal.progress_percentage|floatformat:0 }}%"
+                                 aria-valuenow="{{ goal.progress_percentage|floatformat:0 }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Amount Info -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="p-2 bg-secondary rounded text-center">
+                                <small class="text-muted d-block">Current</small>
+                                <strong class="text-success">{% format_amount goal.current_amount user=request.user %}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-secondary rounded text-center">
+                                <small class="text-muted d-block">Target</small>
+                                <strong>{% format_amount goal.target_amount user=request.user %}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Target Date -->
+                    <div class="mb-3 p-2 bg-secondary rounded text-center">
+                        <small class="text-muted d-block">Target Date</small>
+                        <strong>{{ goal.target_date|date:"M d, Y" }}</strong>
+                    </div>
+
+                    <!-- Remaining Amount -->
+                    <div class="alert alert-info mb-3">
+                        <small>
+                            <i class="fas fa-info-circle"></i>
+                            {% if goal.is_achieved %}
+                            <strong>Goal achieved!</strong> You've reached your target.
+                            {% else %}
+                            <strong>{{ goal.target_amount|add:goal.current_amount|floatformat:2|add:"-"|add:goal.current_amount|floatformat:2 }}</strong> remaining
+                            {% endif %}
+                        </small>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'savings:savings_detail' goal.savings_account.pk %}" class="btn btn-outline-primary btn-sm" data-loading>
+                            <i class="fas fa-eye"></i> View Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="alert alert-info text-center py-5">
+        <i class="fas fa-bullseye fa-3x mb-3"></i>
+        <h4>No Savings Goals Yet</h4>
+        <p>Set a financial goal and start tracking your progress!</p>
+        <a href="{% url 'savings:savings_list' %}" class="btn btn-primary" data-loading>
+            <i class="fas fa-plus"></i> Create a Goal
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
