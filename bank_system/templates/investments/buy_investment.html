@@ -94,7 +94,7 @@
                                                 <h5 class="modal-title">Buy {{ product.name }}</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
-                                            <form method="post" data-product-price="{{ product.current_price }}" novalidate>
+                                            <form method="post" novalidate>
                                                 {% csrf_token %}
                                                 <div class="modal-body">
                                                     <input type="hidden" name="product" value="{{ product.id }}">
@@ -111,43 +111,15 @@
                                                         <strong class="h5">{% format_amount product.current_price user=request.user %}</strong>
                                                     </div>
 
-                                                    <!-- Buy Mode Toggle -->
-                                                    <div class="mb-4">
-                                                        <label class="form-label"><strong>How would you like to buy?</strong></label>
-                                                        <div class="btn-group w-100" role="group">
-                                                            <input type="radio" class="btn-check" name="buy_mode{{ product.id }}" id="buy_by_quantity{{ product.id }}" value="quantity" checked onchange="switchBuyMode{{ product.id }}()">
-                                                            <label class="btn btn-outline-primary" for="buy_by_quantity{{ product.id }}">
-                                                                <i class="fas fa-chart-bar"></i> By Quantity
-                                                            </label>
-
-                                                            <input type="radio" class="btn-check" name="buy_mode{{ product.id }}" id="buy_by_amount{{ product.id }}" value="amount" onchange="switchBuyMode{{ product.id }}()">
-                                                            <label class="btn btn-outline-primary" for="buy_by_amount{{ product.id }}">
-                                                                <i class="fas fa-dollar-sign"></i> By Amount
-                                                            </label>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Buy by Quantity -->
-                                                    <div id="buyByQuantity{{ product.id }}" class="mb-3">
+                                                    <!-- Buy Quantity Input -->
+                                                    <div class="mb-3">
                                                         <label for="quantity{{ product.id }}" class="form-label">
-                                                            <strong>Number of Shares/Units</strong>
+                                                            <strong>Number of Shares/Units to Buy</strong>
                                                         </label>
                                                         <input type="number" class="form-control form-control-lg" name="quantity" id="quantity{{ product.id }}"
                                                                placeholder="Enter number of shares (e.g., 10, 0.5, 2.25)" min="0.01" step="0.01" onchange="updateBuyCost{{ product.id }}()" oninput="updateBuyCost{{ product.id }}()">
                                                         <small class="form-text text-muted d-block mt-2">
                                                             <i class="fas fa-info-circle"></i> You can purchase fractional amounts (e.g., 0.5 shares, 2.25 shares)
-                                                        </small>
-                                                    </div>
-
-                                                    <!-- Buy by Amount -->
-                                                    <div id="buyByAmount{{ product.id }}" class="mb-3" style="display: none;">
-                                                        <label for="amount{{ product.id }}" class="form-label">
-                                                            <strong>Amount to Invest</strong>
-                                                        </label>
-                                                        <input type="number" class="form-control form-control-lg" name="amount" id="amount{{ product.id }}"
-                                                               placeholder="Enter amount (e.g., 100, 500, 1000)" min="0.01" step="0.01" onchange="updateBuyCostByAmount{{ product.id }}()" oninput="updateBuyCostByAmount{{ product.id }}()">
-                                                        <small class="form-text text-muted d-block mt-2">
-                                                            <i class="fas fa-info-circle"></i> Enter the amount you want to invest, we'll calculate the quantity
                                                         </small>
                                                     </div>
 
@@ -200,22 +172,6 @@
 
 <script>
 {% for product in products %}
-function switchBuyMode{{ product.id }}() {
-    const quantityDiv = document.getElementById('buyByQuantity{{ product.id }}');
-    const amountDiv = document.getElementById('buyByAmount{{ product.id }}');
-    const modeRadio = document.querySelector('input[name="buy_mode{{ product.id }}"]:checked').value;
-
-    if (modeRadio === 'quantity') {
-        quantityDiv.style.display = 'block';
-        amountDiv.style.display = 'none';
-        updateBuyCost{{ product.id }}();
-    } else {
-        quantityDiv.style.display = 'none';
-        amountDiv.style.display = 'block';
-        updateBuyCostByAmount{{ product.id }}();
-    }
-}
-
 function updateBuyCost{{ product.id }}() {
     const quantityInput = document.getElementById('quantity{{ product.id }}');
     const quantity = parseFloat(quantityInput.value) || 0;
@@ -230,23 +186,7 @@ function updateBuyCost{{ product.id }}() {
     }
 }
 
-function updateBuyCostByAmount{{ product.id }}() {
-    const amountInput = document.getElementById('amount{{ product.id }}');
-    const amount = parseFloat(amountInput.value) || 0;
-    const currentPrice = {{ product.current_price }};
-
-    if (amount > 0) {
-        document.getElementById('buyCostCalculation{{ product.id }}').style.display = 'block';
-        const quantity = amount / currentPrice;
-        document.getElementById('totalBuyCost{{ product.id }}').textContent = '$' + amount.toFixed(2);
-        // Update the hidden quantity field so it gets submitted with the form
-        document.getElementById('quantity{{ product.id }}').value = quantity.toFixed(4);
-    } else {
-        document.getElementById('buyCostCalculation{{ product.id }}').style.display = 'none';
-    }
-}
-
-// Form submission - ensure quantity is set based on mode
+// Form submission validation
 document.addEventListener('DOMContentLoaded', function() {
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {
@@ -256,51 +196,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!productIdInput) return;
 
             const productId = productIdInput.value;
-            const modeRadio = this.querySelector('input[name="buy_mode' + productId + '"]:checked');
+            const quantityInput = this.querySelector('#quantity' + productId);
 
-            if (!modeRadio) return;
+            if (!quantityInput) return;
 
-            const mode = modeRadio.value;
+            const quantity = parseFloat(quantityInput.value) || 0;
 
-            if (mode === 'amount') {
-                // When buying by amount, ensure quantity is calculated
-                const amountInput = this.querySelector('#amount' + productId);
-                const quantityInput = this.querySelector('#quantity' + productId);
-
-                if (!amountInput || !quantityInput) return;
-
-                const amount = parseFloat(amountInput.value) || 0;
-
-                if (amount <= 0) {
-                    e.preventDefault();
-                    alert('Please enter a valid investment amount');
-                    return false;
-                }
-
-                // Get current price from form data attribute
-                const currentPrice = parseFloat(this.getAttribute('data-product-price'));
-                if (!currentPrice || isNaN(currentPrice)) {
-                    e.preventDefault();
-                    alert('Unable to calculate. Please refresh and try again.');
-                    return false;
-                }
-
-                // Calculate and set quantity
-                const quantity = (amount / currentPrice).toFixed(4);
-                quantityInput.value = quantity;
-            } else {
-                // When buying by quantity, validate input
-                const quantityInput = this.querySelector('#quantity' + productId);
-
-                if (!quantityInput) return;
-
-                const quantity = parseFloat(quantityInput.value) || 0;
-
-                if (quantity <= 0) {
-                    e.preventDefault();
-                    alert('Please enter a valid quantity');
-                    return false;
-                }
+            if (quantity <= 0) {
+                e.preventDefault();
+                alert('Please enter a valid quantity');
+                return false;
             }
         });
     });
