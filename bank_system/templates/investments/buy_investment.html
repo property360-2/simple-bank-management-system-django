@@ -145,7 +145,7 @@
                                                             <strong>Amount to Invest</strong>
                                                         </label>
                                                         <input type="number" class="form-control form-control-lg" name="amount" id="amount{{ product.id }}"
-                                                               placeholder="Enter amount (e.g., 100, 500, 1000)" min="0.01" step="0.01" onchange="updateBuyCostByAmount{{ product.id }}()" oninput="updateBuyCostByAmount{{ product.id }}()">
+                                                               placeholder="Enter amount (e.g., 100, 500, 1000)" min="0.01" step="0.01" novalidate onchange="updateBuyCostByAmount{{ product.id }}()" oninput="updateBuyCostByAmount{{ product.id }}()">
                                                         <small class="form-text text-muted d-block mt-2">
                                                             <i class="fas fa-info-circle"></i> Enter the amount you want to invest, we'll calculate the quantity
                                                         </small>
@@ -208,16 +208,10 @@ function switchBuyMode{{ product.id }}() {
     if (modeRadio === 'quantity') {
         quantityDiv.style.display = 'block';
         amountDiv.style.display = 'none';
-        document.getElementById('quantity{{ product.id }}').removeAttribute('required');
-        document.getElementById('amount{{ product.id }}').removeAttribute('required');
-        document.getElementById('quantity{{ product.id }}').setAttribute('required', 'required');
         updateBuyCost{{ product.id }}();
     } else {
         quantityDiv.style.display = 'none';
         amountDiv.style.display = 'block';
-        document.getElementById('quantity{{ product.id }}').removeAttribute('required');
-        document.getElementById('amount{{ product.id }}').removeAttribute('required');
-        document.getElementById('amount{{ product.id }}').setAttribute('required', 'required');
         updateBuyCostByAmount{{ product.id }}();
     }
 }
