@@ -109,15 +109,32 @@ def buy_investment(request, portfolio_id):
 
     if request.method == 'POST':
         product_id = request.POST.get('product')
-        quantity = Decimal(request.POST.get('quantity'))
+        quantity_str = request.POST.get('quantity', '').strip()
 
         try:
+            # Validate quantity input
+            if not quantity_str:
+                messages.error(request, 'Please enter a quantity')
+                return redirect('investments:buy_investment', portfolio_id=portfolio_id)
+
+            quantity = Decimal(quantity_str)
+
+            # Validate quantity is positive
+            if quantity <= 0:
+                messages.error(request, 'Quantity must be greater than 0')
+                return redirect('investments:buy_investment', portfolio_id=portfolio_id)
+
             product = InvestmentProduct.objects.get(pk=product_id, is_active=True)
-            total_cost = quantity * product.current_price
+
+            # Calculate total cost and round to 2 decimal places (matching balance field precision)
+            total_cost = (quantity * product.current_price).quantize(Decimal('0.01'))
+
+            # Ensure balance is treated as Decimal and convert to 2 decimal places for comparison
+            account_balance = Decimal(str(portfolio.account.balance)).quantize(Decimal('0.01'))
 
             # Check account balance
-            if portfolio.account.balance < total_cost:
-                messages.error(request, 'Insufficient balance in account')
+            if account_balance < total_cost:
+                messages.error(request, f'Insufficient balance. Need {total_cost}, but only have {account_balance}')
                 return redirect('investments:buy_investment', portfolio_id=portfolio_id)
 
             # Deduct from account
@@ -189,14 +206,28 @@ def sell_investment(request, holding_id):
     holding = get_object_or_404(InvestmentHolding, pk=holding_id, portfolio__user=request.user)
 
     if request.method == 'POST':
-        quantity = Decimal(request.POST.get('quantity'))
+        quantity_str = request.POST.get('quantity', '').strip()
 
         try:
-            if quantity > holding.quantity:
-                messages.error(request, 'Cannot sell more than you own')
+            # Validate quantity input
+            if not quantity_str:
+                messages.error(request, 'Please enter a quantity')
                 return redirect('investments:sell_investment', holding_id=holding_id)
 
-            sale_value = quantity * holding.current_price
+            quantity = Decimal(quantity_str)
+
+            # Validate quantity is positive
+            if quantity <= 0:
+                messages.error(request, 'Quantity must be greater than 0')
+                return redirect('investments:sell_investment', holding_id=holding_id)
+
+            # Compare quantities with proper decimal handling
+            if quantity > holding.quantity:
+                messages.error(request, f'Cannot sell more than you own. You have {holding.quantity}')
+                return redirect('investments:sell_investment', holding_id=holding_id)
+
+            # Calculate sale value and round to 2 decimal places
+            sale_value = (quantity * holding.current_price).quantize(Decimal('0.01'))
 
             # Add to account
             holding.portfolio.account.balance += sale_value
