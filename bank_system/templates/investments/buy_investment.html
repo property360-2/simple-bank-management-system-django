@@ -94,7 +94,7 @@
                                                 <h5 class="modal-title">Buy {{ product.name }}</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
-                                            <form method="post">
+                                            <form method="post" data-product-price="{{ product.current_price }}">
                                                 {% csrf_token %}
                                                 <div class="modal-body">
                                                     <input type="hidden" name="product" value="{{ product.id }}">
@@ -257,20 +257,57 @@ document.addEventListener('DOMContentLoaded', function() {
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
-            const buyByQuantityDiv = this.querySelector('[id^="buyByQuantity"]');
-            const buyByAmountDiv = this.querySelector('[id^="buyByAmount"]');
+            // Find the product ID from the form's hidden input
+            const productIdInput = this.querySelector('input[name="product"]');
+            if (!productIdInput) return;
 
-            // Get the mode from the form
-            const modeRadios = this.querySelectorAll('[name^="buy_mode"]');
-            let activeMode = 'quantity';
-            modeRadios.forEach(radio => {
-                if (radio.checked) {
-                    activeMode = radio.value;
+            const productId = productIdInput.value;
+            const modeRadio = this.querySelector('input[name="buy_mode' + productId + '"]:checked');
+
+            if (!modeRadio) return;
+
+            const mode = modeRadio.value;
+
+            if (mode === 'amount') {
+                // When buying by amount, ensure quantity is calculated
+                const amountInput = this.querySelector('#amount' + productId);
+                const quantityInput = this.querySelector('#quantity' + productId);
+
+                if (!amountInput || !quantityInput) return;
+
+                const amount = parseFloat(amountInput.value) || 0;
+
+                if (amount <= 0) {
+                    e.preventDefault();
+                    alert('Please enter a valid investment amount');
+                    return false;
                 }
-            });
 
-            // If buying by amount, the quantity should already be calculated
-            // If buying by quantity, it's ready to go
+                // Get current price from form data attribute
+                const currentPrice = parseFloat(this.getAttribute('data-product-price'));
+                if (!currentPrice || isNaN(currentPrice)) {
+                    e.preventDefault();
+                    alert('Unable to calculate. Please refresh and try again.');
+                    return false;
+                }
+
+                // Calculate and set quantity
+                const quantity = (amount / currentPrice).toFixed(4);
+                quantityInput.value = quantity;
+            } else {
+                // When buying by quantity, validate input
+                const quantityInput = this.querySelector('#quantity' + productId);
+
+                if (!quantityInput) return;
+
+                const quantity = parseFloat(quantityInput.value) || 0;
+
+                if (quantity <= 0) {
+                    e.preventDefault();
+                    alert('Please enter a valid quantity');
+                    return false;
+                }
+            }
         });
     });
 
