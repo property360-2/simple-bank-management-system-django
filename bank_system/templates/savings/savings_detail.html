@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load currency_tags %}
+
+{% block title %}{{ savings_account.product.name }} - {{ savings_account.account_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1><i class="fas fa-piggy-bank text-primary"></i> {{ savings_account.product.name }}</h1>
+            <p class="text-muted">{{ savings_account.account_number }}</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'savings:savings_list' %}" class="btn btn-outline-primary" data-loading>
+                <i class="fas fa-arrow-left"></i> Back to Savings
+            </a>
+        </div>
+    </div>
+
+    <!-- Account Overview -->
+    <div class="row mb-5">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary">
+                    <h5 class="card-title mb-0">Account Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <small class="text-muted d-block mb-2">Current Balance</small>
+                            <h3 class="mb-0 text-success">{% format_amount savings_account.balance user=request.user %}</h3>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <small class="text-muted d-block mb-2">Interest Earned</small>
+                            <h3 class="mb-0 text-primary">{% format_amount savings_account.interest_earned user=request.user %}</h3>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <small class="text-muted d-block">Status</small>
+                            <span class="badge bg-{{ savings_account.status == 'active' and 'success' or 'secondary' }} fs-6">
+                                {{ savings_account.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <small class="text-muted d-block">Interest Rate</small>
+                            <strong>{{ savings_account.product.interest_rate }}% APY</strong>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <small class="text-muted d-block">Opened</small>
+                            <strong>{{ savings_account.opened_at|date:"M d, Y" }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary">
+                    <h5 class="card-title mb-0">Product Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Compounding</small>
+                        <strong>{{ savings_account.product.get_compounding_frequency_display }}</strong>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Withdrawals/Month</small>
+                        <strong>{{ savings_account.product.withdrawal_limit }}</strong>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Minimum Balance</small>
+                        <strong>{% format_amount savings_account.product.min_balance user=request.user %}</strong>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Early Withdrawal Penalty</small>
+                        <strong>{{ savings_account.product.penalty_rate }}%</strong>
+                    </div>
+
+                    {% if savings_account.product.description %}
+                    <hr>
+                    <p class="small text-muted">{{ savings_account.product.description }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Goals -->
+    {% if goals %}
+    <div class="row mb-5">
+        <div class="col-12">
+            <h3 class="mb-4"><i class="fas fa-bullseye"></i> Savings Goals</h3>
+        </div>
+        {% for goal in goals %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title mb-0">{{ goal.name }}</h5>
+                        <span class="badge bg-primary">{{ goal.progress_percentage|floatformat:1 }}%</span>
+                    </div>
+
+                    {% if goal.description %}
+                    <p class="text-muted small mb-3">{{ goal.description }}</p>
+                    {% endif %}
+
+                    <!-- Progress Bar -->
+                    <div class="mb-3">
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-primary"
+                                 role="progressbar"
+                                 style="width: {{ goal.progress_percentage|floatformat:0 }}%"
+                                 aria-valuenow="{{ goal.progress_percentage|floatformat:0 }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Goal Details -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <small class="text-muted d-block">Current</small>
+                            <strong class="text-success">{% format_amount goal.current_amount user=request.user %}</strong>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block">Target</small>
+                            <strong>{% format_amount goal.target_amount user=request.user %}</strong>
+                        </div>
+                    </div>
+
+                    <small class="text-muted d-block">Target: {{ goal.target_date|date:"M d, Y" }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="col-12 mb-4">
+            <a href="{% url 'savings:create_goal' savings_account.pk %}" class="btn btn-primary" data-loading>
+                <i class="fas fa-plus"></i> Create New Goal
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info mb-5">
+        <i class="fas fa-info-circle"></i> No active goals yet.
+        <a href="{% url 'savings:create_goal' savings_account.pk %}" class="btn btn-sm btn-primary ms-2" data-loading>
+            <i class="fas fa-plus"></i> Create a Goal
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Recent Interest Transactions -->
+    {% if interest_transactions %}
+    <div class="row">
+        <div class="col-12">
+            <h3 class="mb-4"><i class="fas fa-history"></i> Recent Interest Transactions</h3>
+
+            <div class="card shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Interest Rate</th>
+                                <th>Amount Earned</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in interest_transactions %}
+                            <tr>
+                                <td>
+                                    <strong>{{ transaction.transaction_date|date:"M d, Y H:i" }}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ transaction.interest_rate }}%</span>
+                                </td>
+                                <td class="text-success">
+                                    <strong>+{% format_amount transaction.amount user=request.user %}</strong>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <a href="{% url 'savings:goals_list' %}" class="btn btn-outline-primary" data-loading>
+                    <i class="fas fa-list"></i> View All Goals
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> No interest transactions yet. Interest will appear here as it's earned.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
