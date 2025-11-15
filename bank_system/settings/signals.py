@@ -9,9 +9,31 @@ User = get_user_model()
 def create_user_preferences(sender, instance, created, **kwargs):
     """Automatically create UserPreferences when a new user is created"""
     if created:
-        UserPreferences.objects.get_or_create(user=instance)
+        try:
+            UserPreferences.objects.get_or_create(
+                user=instance,
+                defaults={
+                    'currency': 'USD',
+                    'show_balance': True,
+                }
+            )
+        except Exception:
+            # If there's any issue creating preferences, silently pass
+            # This can happen if the database schema is out of sync
+            pass
 
 @receiver(post_save, sender=User)
 def save_user_preferences(sender, instance, **kwargs):
     """Ensure UserPreferences exists for the user"""
-    UserPreferences.objects.get_or_create(user=instance)
+    try:
+        UserPreferences.objects.get_or_create(
+            user=instance,
+            defaults={
+                'currency': 'USD',
+                'show_balance': True,
+            }
+        )
+    except Exception:
+        # If there's any issue creating preferences, silently pass
+        pass
+

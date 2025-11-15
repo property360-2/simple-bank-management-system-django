@@ -12,7 +12,7 @@
             </h1>
             <p>{% if form.instance.pk %}Update platform details{% else %}Add a new investment platform{% endif %}</p>
         </div>
-        <a href="{% url 'admin:investment_platforms_list' %}" class="btn btn-outline-secondary">
+        <a href="{% url 'admin_panel:investment_platforms_list' %}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left me-2"></i>Back to Platforms
         </a>
     </div>
@@ -107,7 +107,7 @@
                                     <i class="fas fa-save me-2"></i>
                                     {% if form.instance.pk %}Update Platform{% else %}Create Platform{% endif %}
                                 </button>
-                                <a href="{% url 'admin:investment_platforms_list' %}" class="btn btn-outline-secondary">
+                                <a href="{% url 'admin_panel:investment_platforms_list' %}" class="btn btn-outline-secondary">
                                     <i class="fas fa-times me-2"></i>Cancel
                                 </a>
                             </div>

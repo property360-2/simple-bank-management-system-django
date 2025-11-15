@@ -19,7 +19,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'admin:dashboard' %}">
+            <a class="navbar-brand" href="{% url 'admin_panel:dashboard' %}">
                 <i class="fas fa-shield-alt"></i> Admin Panel
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
@@ -58,31 +58,31 @@
             <div class="p-4">
                 <h5 class="text-primary mb-4">Menu</h5>
                 <div class="admin-sidebar-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-                    <a href="{% url 'admin:dashboard' %}" class="text-decoration-none d-flex align-items-center">
+                    <a href="{% url 'admin_panel:dashboard' %}" class="text-decoration-none d-flex align-items-center">
                         <i class="fas fa-chart-line me-2"></i> Dashboard
                     </a>
                 </div>
 
                 <h6 class="text-secondary text-uppercase mt-4 mb-2" style="font-size: 0.75rem; letter-spacing: 1px;">Product Management</h6>
                 <div class="admin-sidebar-item {% if 'investment' in request.path %}active{% endif %}">
-                    <a href="{% url 'admin:investment_products_list' %}" class="text-decoration-none d-flex align-items-center">
+                    <a href="{% url 'admin_panel:investment_products_list' %}" class="text-decoration-none d-flex align-items-center">
                         <i class="fas fa-chart-pie me-2"></i> Investment Products
                     </a>
                 </div>
                 <div class="admin-sidebar-item">
-                    <a href="{% url 'admin:investment_platforms_list' %}" class="text-decoration-none d-flex align-items-center">
+                    <a href="{% url 'admin_panel:investment_platforms_list' %}" class="text-decoration-none d-flex align-items-center">
                         <i class="fas fa-building me-2"></i> Investment Platforms
                     </a>
                 </div>
                 <div class="admin-sidebar-item {% if 'savings' in request.path %}active{% endif %}">
-                    <a href="{% url 'admin:savings_products_list' %}" class="text-decoration-none d-flex align-items-center">
+                    <a href="{% url 'admin_panel:savings_products_list' %}" class="text-decoration-none d-flex align-items-center">
                         <i class="fas fa-piggy-bank me-2"></i> Savings Products
                     </a>
                 </div>
 
                 <h6 class="text-secondary text-uppercase mt-4 mb-2" style="font-size: 0.75rem; letter-spacing: 1px;">Security</h6>
                 <div class="admin-sidebar-item {% if 'fraud' in request.path %}active{% endif %}">
-                    <a href="{% url 'admin:fraud_detection_list' %}" class="text-decoration-none d-flex align-items-center">
+                    <a href="{% url 'admin_panel:fraud_detection_list' %}" class="text-decoration-none d-flex align-items-center">
                         <i class="fas fa-exclamation-triangle me-2"></i> Fraud Detection
                         {% if pending_fraud_count %}
                         <span class="badge bg-danger ms-auto">{{ pending_fraud_count }}</span>

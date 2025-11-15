@@ -31,7 +31,7 @@ def investment_product_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Investment product created successfully!')
-            return redirect('admin:investment_products_list')
+            return redirect('admin_panel:investment_products_list')
     else:
         form = InvestmentProductForm()
 
@@ -49,7 +49,7 @@ def investment_product_edit(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'Investment product updated successfully!')
-            return redirect('admin:investment_products_list')
+            return redirect('admin_panel:investment_products_list')
     else:
         form = InvestmentProductForm(instance=product)
 
@@ -65,7 +65,7 @@ def investment_product_delete(request, pk):
     if request.method == 'POST':
         product.delete()
         messages.success(request, 'Investment product deleted successfully!')
-        return redirect('admin:investment_products_list')
+        return redirect('admin_panel:investment_products_list')
 
     context = {'product': product}
     return render(request, 'admin/confirm_delete.html', context)
@@ -88,7 +88,7 @@ def investment_platform_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Investment platform created successfully!')
-            return redirect('admin:investment_platforms_list')
+            return redirect('admin_panel:investment_platforms_list')
     else:
         form = InvestmentPlatformForm()
 
@@ -106,7 +106,7 @@ def investment_platform_edit(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'Investment platform updated successfully!')
-            return redirect('admin:investment_platforms_list')
+            return redirect('admin_panel:investment_platforms_list')
     else:
         form = InvestmentPlatformForm(instance=platform)
 
@@ -122,7 +122,7 @@ def investment_platform_delete(request, pk):
     if request.method == 'POST':
         platform.delete()
         messages.success(request, 'Investment platform deleted successfully!')
-        return redirect('admin:investment_platforms_list')
+        return redirect('admin_panel:investment_platforms_list')
 
     context = {'platform': platform}
     return render(request, 'admin/confirm_delete.html', context)

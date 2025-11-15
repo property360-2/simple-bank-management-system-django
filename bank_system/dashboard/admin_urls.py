@@ -3,7 +3,7 @@ from . import admin_views
 from investments import admin_views as investment_admin_views
 from savings import admin_views as savings_admin_views
 
-app_name = 'admin'
+app_name = 'admin_panel'
 
 # Admin dashboard and fraud detection
 dashboard_patterns = [
