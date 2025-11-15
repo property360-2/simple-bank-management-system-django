@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load currency_tags %}
 
 {% block title %}Sell Investment - {{ holding.product.name }}{% endblock %}
 
@@ -37,22 +38,22 @@
                         </div>
                         <div class="col-6">
                             <small class="text-muted d-block">Current Price</small>
-                            <strong class="h6">${{ holding.current_price|floatformat:2 }}</strong>
+                            <strong class="h6">{% format_amount holding.current_price user=request.user %}</strong>
                         </div>
                         <div class="col-6">
                             <small class="text-muted d-block">Purchase Price</small>
-                            <strong class="h6">${{ holding.purchase_price|floatformat:2 }}</strong>
+                            <strong class="h6">{% format_amount holding.purchase_price user=request.user %}</strong>
                         </div>
                         <div class="col-6">
                             <small class="text-muted d-block">Total Value</small>
-                            <strong class="h6">${{ holding.total_value|floatformat:2 }}</strong>
+                            <strong class="h6">{% format_amount holding.total_value user=request.user %}</strong>
                         </div>
                     </div>
                     <hr>
                     <div class="mb-0">
                         <small class="text-muted d-block">Gain/Loss</small>
                         <strong class="{% if holding.profit_loss >= 0 %}text-success{% else %}text-danger{% endif %} h5">
-                            {% if holding.profit_loss >= 0 %}+{% endif %}${{ holding.profit_loss|floatformat:2 }}
+                            {% if holding.profit_loss >= 0 %}+{% endif %}{% format_amount holding.profit_loss user=request.user %}
                             ({{ holding.profit_loss_percent|floatformat:2 }}%)
                         </strong>
                     </div>
@@ -104,11 +105,11 @@
                                 <div class="row g-2">
                                     <div class="col-6">
                                         <small class="d-block">Sale Price per Unit</small>
-                                        <strong>${{ holding.current_price|floatformat:2 }}</strong>
+                                        <strong>{% format_amount holding.current_price user=request.user %}</strong>
                                     </div>
                                     <div class="col-6">
                                         <small class="d-block">Total Sale Value</small>
-                                        <strong id="totalSaleValue">$0.00</strong>
+                                        <strong id="totalSaleValue">{% user_currency_symbol %} 0.00</strong>
                                     </div>
                                 </div>
                             </div>
@@ -116,18 +117,18 @@
                             <div class="card bg-secondary mb-4">
                                 <div class="card-body">
                                     <small class="text-muted d-block mb-2">Cost Basis</small>
-                                    <strong class="h6" id="costBasis">$0.00</strong>
+                                    <strong class="h6" id="costBasis">{% user_currency_symbol %} 0.00</strong>
 
                                     <hr class="my-3">
 
                                     <small class="text-muted d-block mb-2">Gain/Loss on Sale</small>
-                                    <strong class="h5" id="saleGainLoss">$0.00</strong>
+                                    <strong class="h5" id="saleGainLoss">{% user_currency_symbol %} 0.00</strong>
                                 </div>
                             </div>
 
                             <div class="alert alert-success">
                                 <small class="d-block">Amount to Receive</small>
-                                <strong class="h5" id="amountToReceive">$0.00</strong>
+                                <strong class="h5" id="amountToReceive">{% user_currency_symbol %} 0.00</strong>
                             </div>
                         </div>
 
