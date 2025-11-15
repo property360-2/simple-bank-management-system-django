@@ -3,6 +3,8 @@ from django.contrib import messages
 from django.db.models import Sum, Count, Q, Avg
 from django.utils import timezone
 from datetime import timedelta
+from django.core.serializers.json import DjangoJSONEncoder
+import json
 
 from accounts.models import Account
 from transactions.models import Transaction, FraudDetection
@@ -10,6 +12,71 @@ from savings.models import SavingsProduct, SavingsAccount
 from investments.models import InvestmentProduct, Portfolio
 from users.models import User
 from users.decorators import manager_required
+
+
+def get_transaction_chart_data():
+    """Get transaction volume data for the last 30 days"""
+    try:
+        data = {}
+        for i in range(30):
+            date = timezone.now() - timedelta(days=29-i)
+            date_key = date.strftime('%b %d')
+            count = Transaction.objects.filter(
+                created_at__date=date.date()
+            ).count()
+            data[date_key] = count
+        return data
+    except:
+        return {}
+
+
+def get_account_type_distribution():
+    """Get distribution of account types"""
+    try:
+        distribution = Account.objects.values('account_type').annotate(
+            count=Count('id')
+        ).order_by('account_type')
+        return {item['account_type']: item['count'] for item in distribution}
+    except:
+        return {}
+
+
+def get_user_registration_trend():
+    """Get new users registered in the last 30 days"""
+    try:
+        data = {}
+        for i in range(30):
+            date = timezone.now() - timedelta(days=29-i)
+            date_key = date.strftime('%b %d')
+            count = User.objects.filter(
+                date_joined__date=date.date()
+            ).count()
+            data[date_key] = count
+        return data
+    except:
+        return {}
+
+
+def get_transaction_type_distribution():
+    """Get distribution of transaction types"""
+    try:
+        distribution = Transaction.objects.values('transaction_type').annotate(
+            count=Count('id')
+        ).order_by('transaction_type')
+        return {item['transaction_type']: item['count'] for item in distribution}
+    except:
+        return {}
+
+
+def get_fraud_distribution():
+    """Get distribution of fraud by risk level"""
+    try:
+        distribution = FraudDetection.objects.values('risk_level').annotate(
+            count=Count('id')
+        ).order_by('risk_level')
+        return {item['risk_level']: item['count'] for item in distribution}
+    except:
+        return {}
 
 
 @manager_required
@@ -71,6 +138,13 @@ def admin_dashboard(request):
     except:
         total_investment_products = active_portfolios = total_portfolio_value = 0
 
+    # Get chart data
+    transaction_chart_data = get_transaction_chart_data()
+    account_type_data = get_account_type_distribution()
+    user_registration_data = get_user_registration_trend()
+    transaction_type_data = get_transaction_type_distribution()
+    fraud_data = get_fraud_distribution()
+
     context = {
         'total_users': total_users,
         'active_users': active_users,
@@ -90,6 +164,12 @@ def admin_dashboard(request):
         'total_investment_products': total_investment_products,
         'active_portfolios': active_portfolios,
         'total_portfolio_value': total_portfolio_value,
+        # Chart data as JSON
+        'transaction_chart_data_json': json.dumps(transaction_chart_data, cls=DjangoJSONEncoder),
+        'account_type_data_json': json.dumps(account_type_data, cls=DjangoJSONEncoder),
+        'user_registration_data_json': json.dumps(user_registration_data, cls=DjangoJSONEncoder),
+        'transaction_type_data_json': json.dumps(transaction_type_data, cls=DjangoJSONEncoder),
+        'fraud_data_json': json.dumps(fraud_data, cls=DjangoJSONEncoder),
     }
     return render(request, 'admin/dashboard.html', context)
 

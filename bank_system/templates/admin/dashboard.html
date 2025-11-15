@@ -162,6 +162,85 @@
         </div>
     </div>
 
+    <!-- Charts Section -->
+    <h4 class="mb-4 mt-5"><i class="fas fa-chart-bar me-2"></i>Analytics & Visualizations</h4>
+
+    <div class="row g-4 mb-4">
+        <!-- Transaction Volume Chart -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exchange-alt me-2"></i>Transaction Volume (Last 30 Days)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="transactionChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Type Distribution -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-wallet me-2"></i>Account Type Distribution
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="accountTypeChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <!-- User Registration Trend -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-plus me-2"></i>User Registration Trend (Last 30 Days)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="userRegistrationChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction Type Distribution -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list-check me-2"></i>Transaction Type Distribution
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="transactionTypeChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <!-- Fraud Distribution -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Fraud Distribution by Risk Level
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="fraudChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Pending Fraud Alerts -->
     {% if fraud_alerts %}
     <div class="card mb-4">
@@ -251,4 +330,190 @@
         </div>
     </div>
 </div>
+
+{% block extra_js %}
+<script>
+// Chart color scheme for dark mode
+const chartColors = {
+    primary: '#4e73df',
+    success: '#1cc88a',
+    info: '#36b9cc',
+    warning: '#f6c23e',
+    danger: '#e74c3c',
+    light: '#ecf0f1',
+    dark: '#2c3e50'
+};
+
+// Parse data from Django template
+const transactionData = {{ transaction_chart_data_json|safe }};
+const accountTypeData = {{ account_type_data_json|safe }};
+const userRegistrationData = {{ user_registration_data_json|safe }};
+const transactionTypeData = {{ transaction_type_data_json|safe }};
+const fraudData = {{ fraud_data_json|safe }};
+
+// Common chart options
+const commonOptions = {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+        legend: {
+            labels: {
+                color: '#ecf0f1',
+                font: { size: 12 }
+            }
+        }
+    },
+    scales: {
+        y: {
+            ticks: { color: '#adb5bd' },
+            grid: { color: '#495057' }
+        },
+        x: {
+            ticks: { color: '#adb5bd' },
+            grid: { color: '#495057' }
+        }
+    }
+};
+
+// Transaction Volume Chart
+const transactionCtx = document.getElementById('transactionChart').getContext('2d');
+new Chart(transactionCtx, {
+    type: 'line',
+    data: {
+        labels: Object.keys(transactionData),
+        datasets: [{
+            label: 'Transaction Count',
+            data: Object.values(transactionData),
+            borderColor: chartColors.primary,
+            backgroundColor: 'rgba(78, 115, 223, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: chartColors.primary,
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2
+        }]
+    },
+    options: {
+        ...commonOptions,
+        plugins: {
+            ...commonOptions.plugins,
+            filler: { propagate: true }
+        }
+    }
+});
+
+// Account Type Distribution Chart
+const accountTypeCtx = document.getElementById('accountTypeChart').getContext('2d');
+new Chart(accountTypeCtx, {
+    type: 'doughnut',
+    data: {
+        labels: Object.keys(accountTypeData).map(key => key.charAt(0).toUpperCase() + key.slice(1)),
+        datasets: [{
+            data: Object.values(accountTypeData),
+            backgroundColor: [
+                chartColors.primary,
+                chartColors.success,
+                chartColors.info,
+                chartColors.warning
+            ],
+            borderColor: '#2c3e50',
+            borderWidth: 2
+        }]
+    },
+    options: {
+        ...commonOptions,
+        plugins: {
+            ...commonOptions.plugins,
+            legend: {
+                ...commonOptions.plugins.legend,
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// User Registration Trend Chart
+const userRegistrationCtx = document.getElementById('userRegistrationChart').getContext('2d');
+new Chart(userRegistrationCtx, {
+    type: 'line',
+    data: {
+        labels: Object.keys(userRegistrationData),
+        datasets: [{
+            label: 'New Users',
+            data: Object.values(userRegistrationData),
+            borderColor: chartColors.success,
+            backgroundColor: 'rgba(28, 200, 138, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: chartColors.success,
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2
+        }]
+    },
+    options: {
+        ...commonOptions,
+        plugins: {
+            ...commonOptions.plugins,
+            filler: { propagate: true }
+        }
+    }
+});
+
+// Transaction Type Distribution Chart
+const transactionTypeCtx = document.getElementById('transactionTypeChart').getContext('2d');
+new Chart(transactionTypeCtx, {
+    type: 'bar',
+    data: {
+        labels: Object.keys(transactionTypeData).map(key => key.charAt(0).toUpperCase() + key.slice(1)),
+        datasets: [{
+            label: 'Count',
+            data: Object.values(transactionTypeData),
+            backgroundColor: [chartColors.primary, chartColors.success, chartColors.warning],
+            borderColor: '#495057',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        ...commonOptions,
+        indexAxis: undefined
+    }
+});
+
+// Fraud Distribution Chart
+const fraudCtx = document.getElementById('fraudChart').getContext('2d');
+new Chart(fraudCtx, {
+    type: 'doughnut',
+    data: {
+        labels: Object.keys(fraudData).map(key => {
+            const map = { 'low': 'Low', 'medium': 'Medium', 'high': 'High', 'critical': 'Critical' };
+            return map[key] || key;
+        }),
+        datasets: [{
+            data: Object.values(fraudData),
+            backgroundColor: [
+                chartColors.success,
+                chartColors.warning,
+                chartColors.danger,
+                '#c0392b'
+            ],
+            borderColor: '#2c3e50',
+            borderWidth: 2
+        }]
+    },
+    options: {
+        ...commonOptions,
+        plugins: {
+            ...commonOptions.plugins,
+            legend: {
+                ...commonOptions.plugins.legend,
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
 {% endblock %}
