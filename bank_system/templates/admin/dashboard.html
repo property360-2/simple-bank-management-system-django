@@ -275,21 +275,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0"><i class="fas fa-shield-alt me-2"></i>Security & Monitoring</h5>
-                </div>
-                <div class="card-body">
-                    <a href="{% url 'admin_panel:fraud_detection_list' %}" class="btn btn-outline-danger w-100 mb-2">
-                        <i class="fas fa-exclamation-triangle me-2"></i>Fraud Alerts ({{ pending_fraud }})
-                    </a>
-                    <a href="{% url 'admin_panel:fraud_detection_list' %}?status=reviewed" class="btn btn-outline-primary w-100">
-                        <i class="fas fa-check me-2"></i>Reviewed Cases
-                    </a>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 {% endblock %}
