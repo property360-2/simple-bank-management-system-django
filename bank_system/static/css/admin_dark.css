@@ -142,6 +142,26 @@ html[data-admin="true"] .table tbody tr:hover {
     background: var(--dark-surface-light);
 }
 
+html[data-admin="true"] .table-dark {
+    background: #212529;
+    color: #f8f9fa;
+}
+
+html[data-admin="true"] .table-dark th,
+html[data-admin="true"] .table-dark td {
+    color: #f8f9fa;
+    border-color: #454d55;
+}
+
+html[data-admin="true"] .table-dark tbody tr:hover {
+    background: #2d3436;
+    color: #f8f9fa;
+}
+
+html[data-admin="true"] .table-dark strong {
+    color: #ffffff;
+}
+
 /* Stats Cards */
 html[data-admin="true"] .stat-card {
     background: var(--dark-surface);
