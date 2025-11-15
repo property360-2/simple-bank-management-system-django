@@ -93,10 +93,13 @@
                                 <strong>Quantity to Sell</strong>
                             </label>
                             <input type="number" class="form-control form-control-lg" name="quantity" id="quantity"
-                                   placeholder="Enter quantity to sell" min="0.01" max="{{ holding.quantity }}"
+                                   placeholder="Enter quantity to sell (supports fractional amounts)" min="0.01" max="{{ holding.quantity }}"
                                    step="0.01" required onchange="updateSaleValue()">
-                            <small class="text-muted">
-                                Maximum: {{ holding.quantity }} units
+                            <small class="text-muted d-block mt-2">
+                                <i class="fas fa-info-circle"></i> Maximum: {{ holding.quantity }} units
+                            </small>
+                            <small class="text-muted d-block">
+                                You can sell fractional amounts of your holdings
                             </small>
                         </div>
 
