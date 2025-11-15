@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load currency_tags %}
 
 {% block title %}Create Portfolio{% endblock %}
 
@@ -32,7 +33,7 @@
                                 <option value="">-- Select Account --</option>
                                 {% for account in accounts %}
                                 <option value="{{ account.id }}">
-                                    {{ account.account_number }} ({{ account.get_account_type_display }}) - ${{ account.balance|floatformat:2 }}
+                                    {{ account.account_number }} ({{ account.get_account_type_display }}) - {% format_amount account.balance user=request.user %}
                                 </option>
                                 {% endfor %}
                             </select>
