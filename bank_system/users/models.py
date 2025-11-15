@@ -15,10 +15,11 @@ class User(AbstractUser):
         return f"{self.username} ({self.get_role_display()})"
 
     def is_customer(self):
-        return self.role == 'customer'
+        return self.role == 'customer' and not self.is_staff
 
     def is_manager(self):
-        return self.role == 'manager'
+        return self.role == 'manager' or (self.is_staff and self.role != 'customer')
 
     def is_admin_user(self):
-        return self.role == 'admin'
+        """Check if user is admin - either by role or Django superuser/staff status"""
+        return self.role == 'admin' or self.is_superuser or self.is_staff
