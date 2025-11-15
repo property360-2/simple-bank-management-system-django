@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load currency_tags %}
 
 {% block title %}Open Savings Account{% endblock %}
 
@@ -20,7 +21,7 @@
                                 <option value="">-- Select Product --</option>
                                 {% for product in products %}
                                 <option value="{{ product.id }}" data-rate="{{ product.interest_rate }}" data-min="{{ product.min_balance }}">
-                                    {{ product.name }} - {{ product.interest_rate }}% APY (Min: ${{ product.min_balance }})
+                                    {{ product.name }} - {{ product.interest_rate }}% APY (Min: {% format_amount product.min_balance user=request.user %})
                                 </option>
                                 {% endfor %}
                             </select>
@@ -32,7 +33,7 @@
                                 <option value="">-- Select Account --</option>
                                 {% for account in accounts %}
                                 <option value="{{ account.id }}">
-                                    {{ account.account_number }} - ${{ account.balance|floatformat:2 }}
+                                    {{ account.account_number }} - {% format_amount account.balance user=request.user %}
                                 </option>
                                 {% endfor %}
                             </select>

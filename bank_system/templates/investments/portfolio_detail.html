@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load currency_tags %}
 
 {% block title %}{{ portfolio.name }} - Investment Portfolio{% endblock %}
 
@@ -34,7 +35,7 @@
             <div class="card bg-info text-white">
                 <div class="card-body">
                     <h6 class="text-white-50">Total Invested</h6>
-                    <h3 class="mb-0">${{ portfolio.total_invested|floatformat:2 }}</h3>
+                    <h3 class="mb-0">{% format_amount portfolio.total_invested user=request.user %}</h3>
                 </div>
             </div>
         </div>
@@ -42,7 +43,7 @@
             <div class="card bg-success text-white">
                 <div class="card-body">
                     <h6 class="text-white-50">Current Value</h6>
-                    <h3 class="mb-0">${{ portfolio.current_value|floatformat:2 }}</h3>
+                    <h3 class="mb-0">{% format_amount portfolio.current_value user=request.user %}</h3>
                 </div>
             </div>
         </div>
@@ -51,7 +52,7 @@
                 <div class="card-body">
                     <h6 class="text-white-50">Total Return</h6>
                     <h3 class="mb-0">
-                        {% if portfolio.profit_loss >= 0 %}+{% endif %}${{ portfolio.profit_loss|floatformat:2 }}
+                        {% if portfolio.profit_loss >= 0 %}+{% endif %}{% format_amount portfolio.profit_loss user=request.user %}
                     </h3>
                     <small>{{ portfolio.return_percentage|floatformat:2 }}%</small>
                 </div>
@@ -101,12 +102,12 @@
                                     <td>{{ holding.product.name }}</td>
                                     <td><strong>{{ holding.product.symbol }}</strong></td>
                                     <td>{{ holding.quantity }}</td>
-                                    <td>${{ holding.purchase_price|floatformat:2 }}</td>
-                                    <td>${{ holding.current_price|floatformat:2 }}</td>
-                                    <td><strong>${{ holding.total_value|floatformat:2 }}</strong></td>
+                                    <td>{% format_amount holding.purchase_price user=request.user %}</td>
+                                    <td>{% format_amount holding.current_price user=request.user %}</td>
+                                    <td><strong>{% format_amount holding.total_value user=request.user %}</strong></td>
                                     <td>
                                         <span class="{% if holding.profit_loss >= 0 %}text-success{% else %}text-danger{% endif %} fw-bold">
-                                            {% if holding.profit_loss >= 0 %}+{% endif %}${{ holding.profit_loss|floatformat:2 }}
+                                            {% if holding.profit_loss >= 0 %}+{% endif %}{% format_amount holding.profit_loss user=request.user %}
                                             ({{ holding.profit_loss_percent|floatformat:2 }}%)
                                         </span>
                                     </td>
@@ -163,8 +164,8 @@
                                     </td>
                                     <td>{{ transaction.product.name }}</td>
                                     <td>{{ transaction.quantity }}</td>
-                                    <td>${{ transaction.price|floatformat:2 }}</td>
-                                    <td>${{ transaction.total_amount|floatformat:2 }}</td>
+                                    <td>{% format_amount transaction.price user=request.user %}</td>
+                                    <td>{% format_amount transaction.total_amount user=request.user %}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

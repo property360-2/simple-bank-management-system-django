@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load currency_tags %}
 
 {% block title %}Investment Products{% endblock %}
 
@@ -79,7 +80,7 @@
                         <div class="col-6">
                             <div class="p-2 bg-secondary rounded">
                                 <small class="text-muted d-block">Current Price</small>
-                                <strong>${{ product.current_price|floatformat:2 }}</strong>
+                                <strong>{% format_amount product.current_price user=request.user %}</strong>
                             </div>
                         </div>
                         <div class="col-6">
@@ -93,15 +94,15 @@
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center text-sm">
                             <span class="small text-muted">Market Cap</span>
-                            <span class="small">${{ product.market_cap|floatformat:2 }}</span>
+                            <span class="small">{% format_amount product.market_cap user=request.user %}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center text-sm">
                             <span class="small text-muted">Year High</span>
-                            <span class="small">${{ product.year_high|floatformat:2 }}</span>
+                            <span class="small">{% format_amount product.year_high user=request.user %}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center text-sm">
                             <span class="small text-muted">Year Low</span>
-                            <span class="small">${{ product.year_low|floatformat:2 }}</span>
+                            <span class="small">{% format_amount product.year_low user=request.user %}</span>
                         </div>
                     </div>
 

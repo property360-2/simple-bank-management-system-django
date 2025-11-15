@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load currency_tags %}
 
 {% block title %}Buy Investment - {{ portfolio.name }}{% endblock %}
 
@@ -34,11 +35,11 @@
                     </div>
                     <div class="mb-3">
                         <small class="text-muted d-block">Available Balance</small>
-                        <strong class="text-success">${{ portfolio.account.balance|floatformat:2 }}</strong>
+                        <strong class="text-success">{% format_amount portfolio.account.balance user=request.user %}</strong>
                     </div>
                     <div>
                         <small class="text-muted d-block">Current Value</small>
-                        <strong>${{ portfolio.current_value|floatformat:2 }}</strong>
+                        <strong>{% format_amount portfolio.current_value user=request.user %}</strong>
                     </div>
                 </div>
             </div>
@@ -72,7 +73,7 @@
                                         <small class="text-muted">{{ product.platform.name }}</small>
                                     </td>
                                     <td>{{ product.symbol }}</td>
-                                    <td>${{ product.current_price|floatformat:2 }}</td>
+                                    <td>{% format_amount product.current_price user=request.user %}</td>
                                     <td>
                                         <span class="badge bg-{% if product.risk_level == 'low' %}success{% elif product.risk_level == 'medium' %}warning{% else %}danger{% endif %}">
                                             {{ product.get_risk_level_display }}
@@ -105,7 +106,7 @@
 
                                                     <div class="mb-3">
                                                         <label class="form-label">Current Price</label>
-                                                        <input type="text" class="form-control" value="${{ product.current_price|floatformat:2 }}" disabled>
+                                                        <input type="text" class="form-control" value="{% format_amount product.current_price user=request.user %}" disabled>
                                                     </div>
 
                                                     <div class="mb-3">
@@ -117,7 +118,7 @@
                                                     <div class="alert alert-info">
                                                         <small>
                                                             <i class="fas fa-info-circle"></i>
-                                                            Account balance: <strong>${{ portfolio.account.balance|floatformat:2 }}</strong>
+                                                            Account balance: <strong>{% format_amount portfolio.account.balance user=request.user %}</strong>
                                                         </small>
                                                     </div>
                                                 </div>

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load currency_tags %}
 
 {% block title %}My Accounts{% endblock %}
 
@@ -21,7 +22,7 @@
                 </h5>
                 <p class="card-text">
                     <strong>Account #:</strong> {{ account.account_number }}<br>
-                    <strong>Balance:</strong> <span class="text-success fs-4">${{ account.balance }}</span><br>
+                    <strong>Balance:</strong> <span class="text-success fs-4">{% format_amount account.balance user=request.user %}</span><br>
                     <strong>Status:</strong> 
                     {% if account.is_active %}
                         <span class="badge bg-success">Active</span>

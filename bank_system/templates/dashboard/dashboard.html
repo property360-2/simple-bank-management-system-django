@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load currency_tags %}
 {% block title %}Dashboard - Bank System{% endblock %}
 
 {% block content %}
@@ -13,7 +14,7 @@
         <div class="card shadow h-100">
             <div class="card-body">
                 <div class="text-muted text-uppercase mb-2" style="font-size: 0.85rem; font-weight: 600;">Total Net Worth</div>
-                <h3 class="mb-3 text-primary">${{ total_net_worth|floatformat:2 }}</h3>
+                <h3 class="mb-3 text-primary">{% format_amount total_net_worth user=request.user %}</h3>
                 <small class="text-muted">All assets combined</small>
             </div>
         </div>
@@ -22,7 +23,7 @@
         <div class="card shadow h-100">
             <div class="card-body">
                 <div class="text-muted text-uppercase mb-2" style="font-size: 0.85rem; font-weight: 600;">Accounts Balance</div>
-                <h3 class="mb-3 text-success">${{ total_balance|floatformat:2 }}</h3>
+                <h3 class="mb-3 text-success">{% format_amount total_balance user=request.user %}</h3>
                 <small class="text-muted">{{ account_count }} account{{ account_count|pluralize }}</small>
             </div>
         </div>
@@ -31,8 +32,8 @@
         <div class="card shadow h-100">
             <div class="card-body">
                 <div class="text-muted text-uppercase mb-2" style="font-size: 0.85rem; font-weight: 600;">Savings</div>
-                <h3 class="mb-3 text-info">${{ total_savings|floatformat:2 }}</h3>
-                <small class="text-success">+${{ total_interest_earned|floatformat:2 }} interest</small>
+                <h3 class="mb-3 text-info">{% format_amount total_savings user=request.user %}</h3>
+                <small class="text-success">+{% format_amount total_interest_earned user=request.user %} interest</small>
             </div>
         </div>
     </div>
@@ -40,9 +41,9 @@
         <div class="card shadow h-100">
             <div class="card-body">
                 <div class="text-muted text-uppercase mb-2" style="font-size: 0.85rem; font-weight: 600;">Investments</div>
-                <h3 class="mb-3 text-warning">${{ total_investment_value|floatformat:2 }}</h3>
+                <h3 class="mb-3 text-warning">{% format_amount total_investment_value user=request.user %}</h3>
                 <small class="{% if investment_return >= 0 %}text-success{% else %}text-danger{% endif %}">
-                    {% if investment_return >= 0 %}+{% endif %}${{ investment_return|floatformat:2 }} return
+                    {% if investment_return >= 0 %}+{% endif %}{% format_amount investment_return user=request.user %} return
                 </small>
             </div>
         </div>
@@ -74,7 +75,7 @@
                                                 <span class="badge bg-secondary">Inactive</span>
                                             {% endif %}
                                         </div>
-                                        <h3 class="card-text mt-3 mb-3 font-weight-bold text-primary">${{ account.balance|floatformat:2 }}</h3>
+                                        <h3 class="card-text mt-3 mb-3 font-weight-bold text-primary">{% format_amount account.balance user=request.user %}</h3>
                                         <small class="text-muted">Created: {{ account.created_at|date:"M d, Y" }}</small>
                                         <div class="mt-3">
                                             <a href="{% url 'account_detail' account.id %}" class="btn btn-sm btn-outline-primary" title="View Details">
@@ -138,9 +139,9 @@
                                 <span class="badge bg-success">{{ savings.product.interest_rate }}% APY</span>
                             </div>
                             <div class="mt-2">
-                                <strong class="text-primary">${{ savings.balance|floatformat:2 }}</strong>
+                                <strong class="text-primary">{% format_amount savings.balance user=request.user %}</strong>
                                 <span class="text-muted ms-2">|</span>
-                                <small class="text-success ms-2">+${{ savings.interest_earned|floatformat:2 }} earned</small>
+                                <small class="text-success ms-2">+{% format_amount savings.interest_earned user=request.user %} earned</small>
                             </div>
                         </div>
                     {% endfor %}
@@ -172,7 +173,7 @@
                             <div class="progress" style="height: 6px;">
                                 <div class="progress-bar bg-success" style="width: {{ goal.progress_percentage }}%"></div>
                             </div>
-                            <small class="text-muted">${{ goal.current_amount|floatformat:2 }} / ${{ goal.target_amount|floatformat:2 }}</small>
+                            <small class="text-muted">{% format_amount goal.current_amount user=request.user %} / {% format_amount goal.target_amount user=request.user %}</small>
                         </div>
                     {% endfor %}
                 {% endif %}
@@ -200,10 +201,10 @@
                                 </span>
                             </div>
                             <div class="mt-2">
-                                <strong class="text-primary">${{ portfolio.current_value|floatformat:2 }}</strong>
+                                <strong class="text-primary">{% format_amount portfolio.current_value user=request.user %}</strong>
                                 <span class="text-muted ms-2">|</span>
                                 <small class="{% if portfolio.profit_loss >= 0 %}text-success{% else %}text-danger{% endif %} ms-2">
-                                    {% if portfolio.profit_loss >= 0 %}+{% endif %}${{ portfolio.profit_loss|floatformat:2 }}
+                                    {% if portfolio.profit_loss >= 0 %}+{% endif %}{% format_amount portfolio.profit_loss user=request.user %}
                                 </small>
                             </div>
                         </div>
@@ -262,7 +263,7 @@
                                         </td>
                                         <td class="text-right">
                                             <strong class="{% if transaction.transaction_type == 'deposit' or transaction.to_account in accounts %}text-success{% else %}text-danger{% endif %}">
-                                                {% if transaction.transaction_type == 'deposit' or transaction.to_account in accounts %}+{% else %}-{% endif %}${{ transaction.amount|floatformat:2 }}
+                                                {% if transaction.transaction_type == 'deposit' or transaction.to_account in accounts %}+{% else %}-{% endif %}{% format_amount transaction.amount user=request.user %}
                                             </strong>
                                         </td>
                                     </tr>
