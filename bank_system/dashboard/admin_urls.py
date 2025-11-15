@@ -9,8 +9,6 @@ app_name = 'admin_panel'
 dashboard_patterns = [
     path('', admin_views.admin_dashboard, name='dashboard'),
     path('business-intelligence/', bi_views.business_intelligence, name='business_intelligence'),
-    path('fraud-detection/', admin_views.fraud_detection_list, name='fraud_detection_list'),
-    path('fraud-detection/<int:pk>/', admin_views.fraud_detection_detail, name='fraud_detection_detail'),
 ]
 
 # Investment product management
