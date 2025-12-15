@@ -51,12 +51,33 @@ def preferences(request):
     if request.method == 'POST':
         form = UserPreferencesForm(request.POST, instance=preferences)
         if form.is_valid():
-            form.save()
-            messages.success(
-                request,
-                f'Your preferences have been updated! Currency set to {preferences.currency}'
-            )
-            return redirect('settings:preferences')
+            saved_prefs = form.save()
+
+            # Check if this is an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': f'Your preferences have been updated! Currency set to {saved_prefs.currency}',
+                    'preferences': {
+                        'currency': saved_prefs.currency,
+                        'font_size': saved_prefs.get_font_size_display(),
+                        'show_balance': saved_prefs.show_balance,
+                    }
+                })
+            else:
+                messages.success(
+                    request,
+                    f'Your preferences have been updated! Currency set to {preferences.currency}'
+                )
+                return redirect('settings:preferences')
+        else:
+            # Handle form validation errors for AJAX
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Please correct the errors below.',
+                    'errors': form.errors
+                }, status=400)
     else:
         form = UserPreferencesForm(instance=preferences)
 

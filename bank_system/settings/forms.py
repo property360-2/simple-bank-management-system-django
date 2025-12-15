@@ -18,15 +18,6 @@ class UserPreferencesForm(forms.ModelForm):
         help_text='Select your preferred currency for displaying account values'
     )
 
-    theme = forms.ChoiceField(
-        choices=UserPreferences.THEME_CHOICES,
-        widget=forms.RadioSelect(attrs={
-            'class': 'form-check-input',
-        }),
-        label='Theme',
-        help_text='Choose your preferred theme'
-    )
-
     font_size = forms.ChoiceField(
         choices=UserPreferences.FONT_SIZE_CHOICES,
         widget=forms.Select(attrs={
@@ -39,7 +30,7 @@ class UserPreferencesForm(forms.ModelForm):
 
     class Meta:
         model = UserPreferences
-        fields = ['currency', 'theme', 'font_size', 'show_balance']
+        fields = ['currency', 'font_size', 'show_balance']
         widgets = {
             'show_balance': forms.CheckboxInput(attrs={
                 'class': 'form-check-input',

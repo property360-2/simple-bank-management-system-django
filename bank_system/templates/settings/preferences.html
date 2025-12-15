@@ -49,25 +49,6 @@
                                 {% endif %}
                             </div>
                         </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-4">
-                                <label class="form-label d-block mb-3">
-                                    <strong><i class="fas fa-palette"></i> Choose your preferred theme</strong>
-                                </label>
-                                {% if form.theme.errors %}
-                                    <div class="invalid-feedback d-block">{{ form.theme.errors }}</div>
-                                {% endif %}
-                                <div class="theme-radio-group">
-                                    {{ form.theme }}
-                                </div>
-                                {% if form.theme.help_text %}
-                                    <small class="form-text text-muted d-block mt-3">
-                                        {{ form.theme.help_text|safe }}
-                                    </small>
-                                {% endif %}
-                            </div>
-                        </div>
                     </div>
 
                     <div class="row">
@@ -103,7 +84,7 @@
 
                     <!-- Personalization Preview -->
                     <div class="row mt-4">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="card border-info">
                                 <div class="card-body">
                                     <h6 class="card-title"><i class="fas fa-coins"></i> Currency</h6>
@@ -114,18 +95,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="card border-warning">
-                                <div class="card-body">
-                                    <h6 class="card-title"><i class="fas fa-palette"></i> Theme</h6>
-                                    <p class="card-text text-muted mb-0">
-                                        Selected: <strong class="text-warning">{{ preferences.get_theme_display }}</strong>
-                                    </p>
-                                    <small class="text-muted d-block mt-2">Controls app appearance</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="card border-success">
                                 <div class="card-body">
                                     <h6 class="card-title"><i class="fas fa-text-height"></i> Font Size</h6>
@@ -181,7 +151,7 @@
                     </div>
 
                     <div class="mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg">
+                        <button type="submit" class="btn btn-primary btn-lg" id="savePreferencesBtn">
                             <i class="fas fa-save"></i> Save Preferences
                         </button>
                         <a href="{% url 'settings:dashboard' %}" class="btn btn-secondary btn-lg">
@@ -193,4 +163,113 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const saveBtn = document.getElementById('savePreferencesBtn');
+    const currencySelect = document.querySelector('select[name="currency"]');
+    const fontSizeSelect = document.querySelector('select[name="font_size"]');
+    const showBalanceCheckbox = document.querySelector('input[name="show_balance"]');
+
+    // Get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Show toast notification
+    function showToast(message, type = 'success') {
+        // Remove existing toasts
+        const existingToasts = document.querySelectorAll('.preference-toast');
+        existingToasts.forEach(toast => toast.remove());
+
+        const toast = document.createElement('div');
+        toast.className = `preference-toast alert alert-${type} alert-dismissible fade show`;
+        toast.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
+        toast.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+            <strong>${message}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Update preview cards
+    function updatePreviewCards(preferences) {
+        // Update currency preview
+        const currencyValue = document.querySelector('.card.border-info .text-primary');
+        if (currencyValue) currencyValue.textContent = preferences.currency;
+
+        // Update font size preview
+        const fontSizeValue = document.querySelector('.card.border-success .text-success');
+        if (fontSizeValue) fontSizeValue.textContent = preferences.font_size;
+    }
+
+    // Handle form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Disable button and show loading state
+        saveBtn.disabled = true;
+        const originalBtnContent = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+
+        // Prepare form data
+        const formData = new FormData(form);
+
+        // Send AJAX request
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, 'success');
+                updatePreviewCards(data.preferences);
+            } else {
+                showToast(data.message || 'An error occurred', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('An error occurred while saving preferences', 'danger');
+        })
+        .finally(() => {
+            // Re-enable button and restore original content
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalBtnContent;
+        });
+    });
+
+    // Auto-save on change (optional - comment out if not desired)
+    /*
+    [currencySelect, fontSizeSelect, showBalanceCheckbox].forEach(element => {
+        element.addEventListener('change', function() {
+            form.dispatchEvent(new Event('submit'));
+        });
+    });
+    */
+});
+</script>
 {% endblock %}

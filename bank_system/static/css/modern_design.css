@@ -211,7 +211,7 @@ a:hover {
     border-radius: 6px;
     padding: 0.625rem 0.875rem;
     font-size: 0.9rem;
-    transition: all var(--transition-fast);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .form-control:focus,
@@ -232,6 +232,15 @@ a:hover {
     background-color: var(--bg-tertiary);
     border: 1px solid var(--border-primary);
     color: var(--text-secondary);
+    transition: border-color var(--transition-fast);
+}
+
+.input-group:hover .input-group-text {
+    border-color: var(--border-primary);
+}
+
+.input-group .form-control:hover {
+    border-color: var(--border-primary);
 }
 
 /* ============================================================================
